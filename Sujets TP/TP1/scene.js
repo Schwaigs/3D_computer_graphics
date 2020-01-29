@@ -21,8 +21,16 @@ function init() {
                 new THREE.SphereGeometry(1,20,20),
                 new THREE.MeshBasicMaterial( { color: "#FFFFFF" })
         );
+
+        var box1 = new THREE.Mesh(
+                new THREE.BoxGeometry(2,2,2),
+                new THREE.MeshBasicMaterial( { color: "#FF8F77" })
+        );
+        box1.position.set(5,5,5); //origine du cube
+        
         
         scene.add(sphere);
+        scene.add(box1);
 }
 
 function animate() { //a compléter        
