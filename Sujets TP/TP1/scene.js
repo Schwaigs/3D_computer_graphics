@@ -27,10 +27,23 @@ function init() {
                 new THREE.MeshBasicMaterial( { color: "#FF8F77" })
         );
         box1.position.set(5,5,5); //origine du cube
-        
+
+        var sphere2 = new THREE.Mesh(
+                new THREE.SphereGeometry(3,35,35),
+                new THREE.MeshBasicMaterial( { color: "#3F90EC" })
+        );
+        sphere2.position.set(-4,-15,-2);
+
+        var box2 = new THREE.Mesh(
+                new THREE.BoxGeometry(1,1.25,1.25),
+                new THREE.MeshBasicMaterial( { color: "#EC3F76" })
+        );
+        box2.position.set(-5,8,2);
         
         scene.add(sphere);
         scene.add(box1);
+        scene.add(sphere2);
+        scene.add(box2);
 }
 
 function animate() { //a compléter        
