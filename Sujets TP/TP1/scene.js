@@ -19,7 +19,11 @@ function init() {
         renderer = new THREE.WebGLRenderer();
         renderer.setSize(W, H);
         container.appendChild(renderer.domElement);
-        
+
+        //déplacement dans la scène à l'aide de la souris
+        var controls = new THREE.OrbitControls( camera, renderer.domElement );
+        controls.update();
+
         var sphere = new THREE.Mesh(
                 new THREE.SphereGeometry(1,20,20),
                 new THREE.MeshLambertMaterial( { color: "#FFFFFF" })
@@ -67,6 +71,7 @@ function init() {
 
 function animate() { //a compléter        
         requestAnimationFrame(animate);
+        controls.update();
         renderer.render(scene, camera);       
 }
 
