@@ -3,7 +3,7 @@ var H = 700;
 
 var container = document.querySelector('#threejsContainer');
 
-var scene, camera;
+var scene, camera, controls, renderer;
 
 function init() {        
         scene = new THREE.Scene();        
@@ -21,8 +21,7 @@ function init() {
         container.appendChild(renderer.domElement);
 
         //déplacement dans la scène à l'aide de la souris
-        var controls = new THREE.OrbitControls( camera, renderer.domElement );
-        controls.update();
+        controls = new THREE.OrbitControls( camera, renderer.domElement );
 
         var sphere = new THREE.Mesh(
                 new THREE.SphereGeometry(1,20,20),
@@ -87,9 +86,9 @@ function dat_gui(element){
 
         var light_pos = gui.addFolder('Position');
         //Définition des 3 valeurs sur lequelles ont peut influer 
-        var val_x = light_pos.add( parameters, 'lightx' ).min(0).max(20).step(1).listen();
-        var val_y = light_pos.add( parameters, 'lighty' ).min(0).max(20).step(1).listen();
-        var val_z = light_pos.add( parameters, 'lightz' ).min(0).max(20).step(1).listen();
+        var val_x = light_pos.add( parameters, 'lightx' ).min(-20).max(20).step(1).listen();
+        var val_y = light_pos.add( parameters, 'lighty' ).min(-20).max(20).step(1).listen();
+        var val_z = light_pos.add( parameters, 'lightz' ).min(-20).max(20).step(1).listen();
         light_pos.open();
         val_x.onChange(
                 function(value) { 
