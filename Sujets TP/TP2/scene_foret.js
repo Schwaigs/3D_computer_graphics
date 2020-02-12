@@ -87,8 +87,7 @@ function init() {
 
         //ajout lapin et vache obj
         import_obj('bunny.obj',0.8,scene,2,2,-5);
-        import_obj('cow.obj',2,scene,-2,3,0);
-        
+        import_obj_smooth('cow.obj',2,scene,-2,3,0);
 
 }
 
@@ -103,7 +102,7 @@ function import_obj(name,hauteur,scene,posX,posZ,coeff_rot){
         loader.load(
                 name,
                 function(object){
-                        obj=object;
+                        obj=object.children[0];
                         scene.add(obj);
 
                         var box = new THREE.BoxHelper( obj, 0xffff00 ); //l'import peut créer un groupe de mash au lieu de un seul mesh donc boxhelper permet d'englober le groupe
@@ -119,6 +118,44 @@ function import_obj(name,hauteur,scene,posX,posZ,coeff_rot){
                         obj.position.set(posX,-box2.geometry.boundingBox.min.y,posZ);
 
                         obj.rotation.y = coeff_rot * Math.PI / 16;
+                       
+                },
+                function(xhr){console.log((xhr.loaded/xhr.total*100)+'% loaded');},
+                function(error){console.log('An error happened');},
+        )
+}
+
+
+function import_obj_smooth(name,hauteur,scene,posX,posZ,coeff_rot){
+        var loader = new THREE.OBJLoader();
+        loader.load(
+                name,
+                function(object){
+                        obj=object.children[0];
+
+                        var smooth = new THREE.Geometry().fromBufferGeometry(obj.geometry.clone());
+                        smooth.mergeVertices();
+                        var modifier = new THREE.SubdivisionModifier(2);
+                        modifier.modify(smooth);
+                        var obj_smooth = new THREE.Mesh(smooth,new THREE.MeshPhongMaterial({ color: "#b9b0ad" }));
+                        obj_smooth.geometry.computeVertexNormals();
+                        obj_smooth.geometry.mergeVertices();
+                        scene.add(obj_smooth);
+
+                        var box = new THREE.BoxHelper( obj_smooth, 0xffff00 ); //l'import peut créer un groupe de mash au lieu de un seul mesh donc boxhelper permet d'englober le groupe
+                        box.geometry.computeBoundingBox();
+                        var h = box.geometry.boundingBox.max.y - box.geometry.boundingBox.min.y 
+                        var coeff = 1/h;
+                        obj_smooth.scale.x = hauteur * coeff;
+                        obj_smooth.scale.y = hauteur * coeff;
+                        obj_smooth.scale.z = hauteur * coeff;
+
+                        var box2 = new THREE.BoxHelper( obj_smooth, 0xffff00 );
+                        box2.geometry.computeBoundingBox();
+                        obj_smooth.position.set(posX,-box2.geometry.boundingBox.min.y,posZ);
+
+                        obj_smooth.rotation.y = coeff_rot * Math.PI / 16;
+                       
                 },
                 function(xhr){console.log((xhr.loaded/xhr.total*100)+'% loaded');},
                 function(error){console.log('An error happened');},
