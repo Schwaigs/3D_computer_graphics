@@ -85,46 +85,9 @@ function init() {
         feuilles.position.set(0.2,2,5.5);
         scene.add(feuilles);
 
-        //ajout lapin obj
-        var lapin;
-        var loader = new THREE.OBJLoader();
-        loader.load(
-                'bunny.obj',
-                function(object){
-                        lapin=object;
-                        lapin.position.set(0,-0.22,0);
-                        lapin.scale.x = 5;
-                        lapin.scale.y = 5;
-                        lapin.scale.z = 5;
-                        lapin.rotation.z = 10*Math.PI / 180;
-                        scene.add(lapin);
-                },
-                function(xhr){console.log((xhr.loaded/xhr.total*100)+'% loaded');},
-                function(error){console.log('An error happened');},
-        )
-
-        //ajout vache obj
-        var cow;
-        var loader2 = new THREE.OBJLoader();
-        loader2.load(
-                'cow.obj',
-                function(object){
-                        cow=object;
-                        scene.add(cow);
-                        
-                        cow.scale.x = 0.35;
-                        cow.scale.y = 0.35;
-                        cow.scale.z = 0.35;
-                        var box = new THREE.BoxHelper( cow, 0xffff00 ); //l'import peut créer un groupe de mash au lieu de un seul mesh donc boxhelper permet d'englober le groupe
-                        
-                        
-                        box.geometry.computeBoundingBox()
-                        cow.add(box);
-                        cow.position.set(-2,-box.geometry.boundingBox.min.y,3);
-                },
-                function(xhr){console.log((xhr.loaded/xhr.total*100)+'% loaded');},
-                function(error){console.log('An error happened');},
-        )
+        //ajout lapin et vache obj
+        import_obj('bunny.obj',0.8,scene,2,2,-5);
+        import_obj('cow.obj',2,scene,-2,3,0);
         
 
 }
@@ -133,6 +96,33 @@ function animate() { //a compléter
         requestAnimationFrame(animate);
         controls.update();
         renderer.render(scene, camera);       
+}
+
+function import_obj(name,hauteur,scene,posX,posZ,coeff_rot){
+        var loader = new THREE.OBJLoader();
+        loader.load(
+                name,
+                function(object){
+                        obj=object;
+                        scene.add(obj);
+
+                        var box = new THREE.BoxHelper( obj, 0xffff00 ); //l'import peut créer un groupe de mash au lieu de un seul mesh donc boxhelper permet d'englober le groupe
+                        box.geometry.computeBoundingBox();
+                        var h = box.geometry.boundingBox.max.y - box.geometry.boundingBox.min.y 
+                        var coeff = 1/h;
+                        obj.scale.x = hauteur * coeff;
+                        obj.scale.y = hauteur * coeff;
+                        obj.scale.z = hauteur * coeff;
+
+                        var box2 = new THREE.BoxHelper( obj, 0xffff00 );
+                        box2.geometry.computeBoundingBox();
+                        obj.position.set(posX,-box2.geometry.boundingBox.min.y,posZ);
+
+                        obj.rotation.y = coeff_rot * Math.PI / 16;
+                },
+                function(xhr){console.log((xhr.loaded/xhr.total*100)+'% loaded');},
+                function(error){console.log('An error happened');},
+        )
 }
 
 function dat_gui(element){
