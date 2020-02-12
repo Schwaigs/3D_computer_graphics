@@ -20,6 +20,10 @@ function init() {
         renderer.setSize(W, H);
         container.appendChild(renderer.domElement);
 
+        //axes
+        var axesHelper = new THREE.AxesHelper( 5 );
+        scene.add( axesHelper );
+
         //déplacement dans la scène à l'aide de la souris
         controls = new THREE.OrbitControls( camera, renderer.domElement );
 
@@ -34,7 +38,7 @@ function init() {
         sun_light.add(pointLight_sun);
         scene.add(sun_light);
 
-        //représentation de la source de lumière par un solei
+        //représentation de la source de lumière par un soleil
         var sun = new THREE.Mesh(
                 new THREE.SphereGeometry(1.5,120,120),
                 new THREE.MeshBasicMaterial( { color: "#FFEF2E" })
@@ -47,7 +51,7 @@ function init() {
 
         //sol
         var sol = new THREE.Mesh(
-                new THREE.BoxGeometry(20,0.2,20),
+                new THREE.BoxGeometry(20,0.4,20),
                 new THREE.MeshLambertMaterial( { color: "#7AF751" })
         );
         sol.position.set(0,-0.2,0);
@@ -92,6 +96,7 @@ function init() {
                         lapin.scale.x = 5;
                         lapin.scale.y = 5;
                         lapin.scale.z = 5;
+                        lapin.rotation.z = 10*Math.PI / 180;
                         scene.add(lapin);
                 },
                 function(xhr){console.log((xhr.loaded/xhr.total*100)+'% loaded');},
@@ -105,13 +110,18 @@ function init() {
                 'cow.obj',
                 function(object){
                         cow=object;
-                        cow.position.set(-2,1.3,3);
                         scene.add(cow);
-                        var box = new THREE.BoxHelper( cow, 0xffff00 );
-                        cow.scale.x = 0.4;
-                        cow.scale.y = 0.4;
-                        cow.scale.z = 0.4;
-                        scene.add( box );},
+                        
+                        cow.scale.x = 0.35;
+                        cow.scale.y = 0.35;
+                        cow.scale.z = 0.35;
+                        var box = new THREE.BoxHelper( cow, 0xffff00 ); //l'import peut créer un groupe de mash au lieu de un seul mesh donc boxhelper permet d'englober le groupe
+                        
+                        
+                        box.geometry.computeBoundingBox()
+                        cow.add(box);
+                        cow.position.set(-2,-box.geometry.boundingBox.min.y,3);
+                },
                 function(xhr){console.log((xhr.loaded/xhr.total*100)+'% loaded');},
                 function(error){console.log('An error happened');},
         )
