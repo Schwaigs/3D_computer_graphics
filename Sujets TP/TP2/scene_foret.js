@@ -88,6 +88,7 @@ function init() {
         //ajout lapin et vache obj
         import_obj('bunny.obj',0.8,scene,2,2,-5);
         import_obj_smooth('cow.obj',2,scene,-2,3,0);
+        import_mtl('saber.mtl','saber.obj',0.4,scene,4,-1,8);
 
 }
 
@@ -124,6 +125,44 @@ function import_obj(name,hauteur,scene,posX,posZ,coeff_rot){
                 function(error){console.log('An error happened');},
         )
 }
+
+
+function import_mtl(name_mtl,name_obj,hauteur,scene,posX,posZ,coeff_rot){
+        var mtlloader = new THREE.MTLLoader();
+        mtlloader.load(
+                name_mtl,
+                function(materials){
+                        //materials.preload();
+                        var objLoader = new THREE.OBJLoader();
+                        objLoader.setMaterials(materials)
+                        objLoader.load(
+                                name_obj,
+                                function(object){
+                                        scene.add(object);
+                                        object.position.set(0,0,0);
+                                        var box = new THREE.BoxHelper( object, 0xffff00 ); //l'import peut créer un groupe de mash au lieu de un seul mesh donc boxhelper permet d'englober le groupe
+                                        box.geometry.computeBoundingBox();
+                                        var h = box.geometry.boundingBox.max.y - box.geometry.boundingBox.min.y 
+                                        var coeff = 1/h;
+                                        object.scale.x = hauteur * coeff;
+                                        object.scale.y = hauteur * coeff;
+                                        object.scale.z = hauteur * coeff;
+
+                                        var box2 = new THREE.BoxHelper( object, 0xffff00 );
+                                        box2.geometry.computeBoundingBox();
+                                        object.position.set(posX,-box2.geometry.boundingBox.min.y,posZ);
+
+                                        object.rotation.y = coeff_rot * Math.PI / 16;
+                                },
+                                function(xhr){console.log((xhr.loaded/xhr.total*100)+'% loaded');},
+                                function(error){console.log('An error happened obj');},
+                        );
+                },
+                function(xhr){console.log((xhr.loaded/xhr.total*100)+'% loaded');},
+                function(error){console.log('An error happened mtl');},
+        )
+}
+
 
 
 function import_obj_smooth(name,hauteur,scene,posX,posZ,coeff_rot){
