@@ -6,7 +6,7 @@
  (SphereGeometry) avec un matériau coloré basique (MeshBasicMaterial).**
 
 Dans le fichier *scene.js* on créer une instance de Mesh.
-Le constructeur demande une taille (largeur, hauteur, profondeur) ainsi qu'un matériau.*
+Le constructeur demande une taille (largeur, hauteur, profondeur) ainsi qu'un matériau.  
         var box1 = new THREE.Mesh(
             new THREE.BoxGeometry(2,2,2),
             new THREE.MeshBasicMaterial( { color: "#FF8F77" })
