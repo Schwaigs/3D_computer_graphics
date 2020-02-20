@@ -88,7 +88,7 @@ function init() {
         //ajout lapin et vache obj
         import_obj('bunny.obj',0.8,scene,2,2,-5);
         import_obj_smooth('cow.obj',2,scene,-2,3,0);
-        import_mtl('saber.mtl','saber.obj',0.4,scene,4,-1,8);
+        import_mtl('cgaxis_models_115_37_obj.mtl','cgaxis_models_115_37_obj.obj',2,scene,4,-1,8);
 
 }
 
