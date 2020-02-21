@@ -20,10 +20,10 @@ Enfin on ajoute notre Mesh à la scène.
     scene.add(box1);
 
 Le résultat obtenu est le suivant :  
-![Premier cube de la scène](/TP1/captures_ecran/capture_cube_position.png)  
+![Premier cube de la scène](./TP1/captures_ecran/capture_cube_position.png)  
 
 De même on rajoute ensuite d'autres Mesh à notre scène qui ressemble alors à ça :
-![Plusieurs Mesh dans la scène](/TP1/captures_ecran/plusieurs_objets.png)
+![Plusieurs Mesh dans la scène](./TP1/captures_ecran/plusieurs_objets.png)
 
 &nbsp;
 
@@ -65,7 +65,7 @@ Ensuite on ajoute notre *PointLight* à notre sphère. On assigne alors une post
     scene.add( sphere_lum );
 
 Cela nous donne le résultat ci-dessous. La sphère grise transparente contenant la source de lumière.
-![Lumière sphère transparente](/TP1/captures_ecran/lumiere_dans_sphere.png)
+![Lumière sphère transparente](./TP1/captures_ecran/lumiere_dans_sphere.png)
 
 On constate que les Mesh sont maintenant visibles sans que notre scène n'est de couleur de fond. L'allule des Mesh n'est donc pas la même qu'avec un *MeshBasicMaterial*. En effet, les différentes faces dépendent de l'éclairage et ne sont pas donc toutes vidibles de la même manière.
 
@@ -121,7 +121,7 @@ Pour ajouter un panneau de contrôle lié à notre source de lumière on rajoute
     dat_gui(sphere_lum);
 
 On peut ainsi déplacer notre lumière comme cela :
-![Lumière déplaçable](/TP1/captures_ecran/lumiere_deplacable.png)
+![Lumière déplaçable](./TP1/captures_ecran/lumiere_deplacable.png)
 
 &nbsp;
 
@@ -136,14 +136,14 @@ On ajoute aussi à la fonction animate() de notre script js l'instruction suivan
     controls.update();
 
 Ainsi on peut se déplacer dans notre scène et voir nos Mesh sous un autre angle.
-![souris déplace](/TP1/captures_ecran/deplacement_souris.png)
+![souris déplace](./TP1/captures_ecran/deplacement_souris.png)
 
 &nbsp;
 
 **6) Créer une petite scène montrant votre compréhension des différents objets géométriques fournis dans Three.js.**
 
-![Scène de forêt](/TP1/captures_ecran/scene_foret2.png)
-![Scène de forêt](/TP1/captures_ecran/scene_foret.png)
+![Scène de forêt](./TP1/captures_ecran/scene_foret2.png)
+![Scène de forêt](./TP1/captures_ecran/scene_foret.png)
 
 &nbsp;
 _____________________
@@ -175,7 +175,7 @@ Puis on appel la fonction load sur notre *OBJLoader*. On lui donne notre fichier
 **2) Vérifier que les données sont bien importées. Vous serez peut-être confrontés à un problème de sécurité.**
 
 L'erreur de sécurité empéche effectivement d'importer correctement le lapin en obj. Pour régler le problème, on installe l'extention Live Server proposée par VSCode afin de faire tourner un serveur local.
-![Live Server](/TP2/captures_ecran/live_server.png)
+![Live Server](./TP2/captures_ecran/live_server.png)
 
 &nbsp;
 
@@ -198,8 +198,8 @@ De même que pour le lpin dans le 1) on ajoute maintenant une vâche à la scèn
 
 On remarque que nos objets sont totalement disproportionnés, le lapin est à peine visible tant il est petit, tandis que la vâche est énorme, elle couvre donc la quasi-totalité de notre scène de forêt.
 
-![Vache](/TP2/captures_ecran/vache_et_lapin_2.png)
-![Lapin](/TP2/captures_ecran/vache_et_lapin_3.png)
+![Vache](./TP2/captures_ecran/vache_et_lapin_2.png)
+![Lapin](./TP2/captures_ecran/vache_et_lapin_3.png)
 
 Pour parlier à ce problème de proportion on applique des transformation sur la taille de nos objets à l'aide de l'attribut *scale* dans function(object) du *load*.
 
@@ -215,7 +215,7 @@ Tandis que pour la vâche il s'agit de la rendre plus petite :
     cow.scale.y = 0.35;
     cow.scale.z = 0.35;
 
-![Vache et Lapin rezise](/TP2/captures_ecran/vache_et_lapin_resize.png)
+![Vache et Lapin rezise](./TP2/captures_ecran/vache_et_lapin_resize.png)
 
 &nbsp;
 
@@ -227,14 +227,14 @@ En premier lieu on calcule les dimensions de notre objet à l'aide d'une boite e
     box.geometry.computeBoundingBox()
     cow.add(box);
 
-![Vache Boxhelper](/TP2/captures_ecran/vache_BoxHelper.png)
+![Vache Boxhelper](./TP2/captures_ecran/vache_BoxHelper.png)
 
 Puisque l'on souhaite placer notre vâche au niveau du sol, il faut que notre translation amène la coordonnée minimum de celle-ci sur l'axe y à 0. On modifie donc la position de notre objet comme suit :
 
     cow.position.set(-2,-box.geometry.boundingBox.min.y,3);
 
 On fait de même pour notre lapin ce qui nous donne le résultat ci-dessous.
-![Vache lapin niveau sol](/TP2/captures_ecran/vache_et_lapin_niveau_sol.png)
+![Vache lapin niveau sol](./TP2/captures_ecran/vache_et_lapin_niveau_sol.png)
 
 &nbsp;
 
@@ -321,7 +321,7 @@ A la suite de cela on créer un nouveau Mesh qui se sert de notre *Geometry* com
 
 La suite des instructions du load qui étaient faites sur obj utilisent maintenant obj_smooth. Le résultat obtenu sur la vâche est le suivant :
 
-![Vache lisse](/TP2/captures_ecran/vache_smooth.png)
+![Vache lisse](./TP2/captures_ecran/vache_smooth.png)
 
 &nbsp;
 
@@ -365,4 +365,4 @@ Grâce à notre fonction on ajoute un sabre à notre scène avec l'instruction s
 
         import_mtl('saber.mtl','saber.obj',0.4,scene,4,-1,8)
 
-![Saber texture](/TP2/captures_ecran/sabre_texture.png)
+![Saber texture](./TP2/captures_ecran/sabre_texture.png)
