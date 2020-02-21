@@ -27,27 +27,21 @@ function init() {
         //déplacement dans la scène à l'aide de la souris
         controls = new THREE.OrbitControls( camera, renderer.domElement );
 
-        //source de lumiere dans une boule transparente
-        var sun_light = new THREE.Mesh(
-                new THREE.SphereGeometry(1.5,20,20),
-                new THREE.MeshLambertMaterial( { color: "#FFEF2E", opacity :0.2, transparent: true })
-        );
-        sun_light.position.set(8,8,-8);
+        //source de lumière
         var pointLight_sun = new THREE.PointLight( 0xffffff, 1, 100 );
         pointLight_sun.position.set( 8, 8, -8 );
-        sun_light.add(pointLight_sun);
-        scene.add(sun_light);
 
         //représentation de la source de lumière par un soleil
         var sun = new THREE.Mesh(
                 new THREE.SphereGeometry(1.5,120,120),
                 new THREE.MeshBasicMaterial( { color: "#FFEF2E" })
         );
+        sun.add(pointLight_sun);
         sun.position.set(8,8,-8);
         scene.add(sun);
 
         //paneau de controle de la position de la lumière
-        dat_gui2(sun_light,sun);
+        dat_gui(sun);
 
         //sol
         var sol = new THREE.Mesh(
@@ -227,42 +221,6 @@ function dat_gui(element){
         val_z.onChange(
                 function(value) { 
                         element.position.z = value;
-                }
-        ); 
-}
-
-function dat_gui2(element_lum,representant){
-        //valeurs de bases du panneau de contôle
-        var parameters = {
-                lightx: element_lum.position.x,
-                lighty: element_lum.position.y,
-                lightz: element_lum.position.z,
-        };
-
-        var gui = new dat.GUI();
-
-        var light_pos = gui.addFolder('Position');
-        //Définition des 3 valeurs sur lequelles ont peut influer 
-        var val_x = light_pos.add( parameters, 'lightx' ).min(-20).max(20).step(1).listen();
-        var val_y = light_pos.add( parameters, 'lighty' ).min(-20).max(20).step(1).listen();
-        var val_z = light_pos.add( parameters, 'lightz' ).min(-20).max(20).step(1).listen();
-        light_pos.open();
-        val_x.onChange(
-                function(value) { 
-                        element_lum.position.x = value;
-                        representant.position.x =value;
-                }
-        );
-        val_y.onChange(
-                function(value) { 
-                        element_lum.position.y = value;
-                        representant.position.y =value;
-                }
-        ); 
-        val_z.onChange(
-                function(value) { 
-                        element_lum.position.z = value;
-                        representant.position.z =value;
                 }
         ); 
 }
