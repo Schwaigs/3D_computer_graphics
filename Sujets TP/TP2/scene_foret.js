@@ -82,6 +82,9 @@ function init() {
         //ajout lapin et vache obj
         import_obj('bunny.obj',0.8,scene,2,2,-5);
         import_obj_smooth('cow.obj',2,scene,-2,3,0);
+        //import_obj('Orange.obj',1.5,scene,4,-1,0);
+        //import_obj('Journal.obj',1,scene,-3,-2,0);
+        //import_obj('galapagos.OBJ',2,scene,4,-4,0);
         import_mtl('saber.mtl','saber.obj',0.4,scene,4,-1,8)
 
 }
