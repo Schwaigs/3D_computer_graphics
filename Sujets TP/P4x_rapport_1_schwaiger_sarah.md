@@ -163,6 +163,10 @@ Enfin on associe notre soleil à un paneau de contôle afin de pouvoir le dépla
 ![Scène de forêt](./TP1/captures_ecran/scene_foret2.png)
 ![Scène de forêt](./TP1/captures_ecran/scene_foret.png)
 
+Au départ je pensait que placer la source de lumière dans la sphère opaque qu'est mon soleil ne laisserait aucune lumière sortir pour éclairer la scène. J'ai donc voulu la mettre dans une sphère transparente, puis ajouter une autre sphère (mon soleil en *MeshBasicMateral*) en tant que représantant dans la scène juste à coté pour garder le coté lumineux du soleil qu'on ne retrouve pas avec la shpère transparante. Mon panneaux de contrôle prenanit alors deux éléments en argument et modifiait les positions des deux sphères en même temps.
+
+En testant après coup je me suis rendu compte que la lumière passait à travers le *MeshBasicMaterial* et que je pouvais réutiliser le code des question 3 et 4 sans avoir à faire spécialement de changement. J'ai donc supprimer la sphère transparente de ma scène et n'ai garder que mon soleil en faisant ainsi dans le code ce que j'ai décrit plus haut.
+
 &nbsp;
 _____________________
 
@@ -254,6 +258,8 @@ Puisque l'on souhaite placer notre vache au niveau du sol, il faut que notre tra
 On fait de même pour notre lapin ce qui nous donne le résultat ci-dessous.
 ![Vache lapin niveau sol](./TP2/captures_ecran/vache_et_lapin_niveau_sol.png)
 
+J'ai personellement eu un peu de mal avec cette partie car le haut du sol que j'avais mis dans ma scène ne correspondait pas exactement au 0 sur l'axe z. Il a donc fallu que je modifie en premier lieu mon sol, c'est pourquoi je me suis servie d'un *AxesHelper* que l'on peut voir sur la capture d'écran précédente.
+
 &nbsp;
 
 **5) Refactorer maintenant le code pour en faire une fonction qui prenne en paramètre le nom du fichier et la hauteur cible pour importer autant d'objets que voulus et spécifier la taille cible.**
@@ -336,6 +342,8 @@ J'ai tout de fois trouver des modèles en obj en tapant directement "OBJ" dans l
 
 **7) On constate que les objets fournis avec le TP ne sont pas lisses. Trouver une méthode pour lisser les objets.**
 
+Cette partie a été pour moi la plus difficile. J'ai en premier lieu, tenter de passer par la librairie three.js *SubdivisionModifier.js* qui se trouve [ici](https://github.com/mrdoob/three.js/blob/dev/examples/js/modifiers/SubdivisionModifier.js). N'arrivant pas au résultat voulu j'ai donc demander de l'aide à mes camarade et après un peu de recherche j'en suis arrivée à la méthode décrite ci-après.
+
 Pour lisser les objets on rajoute dans le load de notre fonction import_obj() un bloc de code entre les deux lignes suivante :
 
     obj=object;
@@ -357,6 +365,7 @@ A la suite de cela on crée un nouveau Mesh qui se sert de notre *Geometry* comm
 La suite des instructions du load qui étaient faites sur obj utilisent maintenant obj_smooth. Le résultat obtenu sur la vache est le suivant :
 
 ![Vache lisse](./TP2/captures_ecran/vache_smooth.png)
+
 
 &nbsp;
 
