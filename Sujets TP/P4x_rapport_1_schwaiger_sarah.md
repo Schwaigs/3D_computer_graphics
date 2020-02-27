@@ -163,9 +163,9 @@ Enfin on associe notre soleil à un paneau de contôle afin de pouvoir le dépla
 ![Scène de forêt](./TP1/captures_ecran/scene_foret2.png)
 ![Scène de forêt](./TP1/captures_ecran/scene_foret.png)
 
-Au départ je pensait que placer la source de lumière dans la sphère opaque qu'est mon soleil ne laisserait aucune lumière sortir pour éclairer la scène. J'ai donc voulu la mettre dans une sphère transparente, puis ajouter une autre sphère (mon soleil en *MeshBasicMateral*) en tant que représantant dans la scène juste à coté pour garder le coté lumineux du soleil qu'on ne retrouve pas avec la shpère transparante. Mon panneaux de contrôle prenanit alors deux éléments en argument et modifiait les positions des deux sphères en même temps.
+Au départ je pensais que placer la source de lumière dans la sphère opaque qu'est mon soleil ne laisserait aucune lumière sortir pour éclairer la scène. J'ai donc voulu la mettre dans une sphère transparente, puis ajouter une autre sphère (mon soleil en *MeshBasicMateral*) en tant que représentant dans la scène juste à côté pour garder le côté lumineux du soleil qu'on ne retrouve pas avec la sphère transparente. Mon panneaux de contrôle prenait alors deux éléments en argument et modifiait les positions des deux sphères en même temps.
 
-En testant après coup je me suis rendu compte que la lumière passait à travers le *MeshBasicMaterial* et que je pouvais réutiliser le code des question 3 et 4 sans avoir à faire spécialement de changement. J'ai donc supprimer la sphère transparente de ma scène et n'ai garder que mon soleil en faisant ainsi dans le code ce que j'ai décrit plus haut.
+En testant après coup, je me suis rendu compte que la lumière passait à travers le *MeshBasicMaterial* et que je pouvais réutiliser le code des questions 3 et 4 sans avoir à faire spécialement de changement. J'ai donc supprimé la sphère transparente de ma scène et n'ai gardé que mon soleil en faisant ainsi dans le code ce que j'ai décrit plus haut.
 
 &nbsp;
 _____________________
@@ -258,7 +258,7 @@ Puisque l'on souhaite placer notre vache au niveau du sol, il faut que notre tra
 On fait de même pour notre lapin ce qui nous donne le résultat ci-dessous.
 ![Vache lapin niveau sol](./TP2/captures_ecran/vache_et_lapin_niveau_sol.png)
 
-J'ai personellement eu un peu de mal avec cette partie car le haut du sol que j'avais mis dans ma scène ne correspondait pas exactement au 0 sur l'axe z. Il a donc fallu que je modifie en premier lieu mon sol, c'est pourquoi je me suis servie d'un *AxesHelper* que l'on peut voir sur la capture d'écran précédente.
+J'ai personnellement eu un peu de mal avec cette partie car le haut du sol que j'avais mis dans ma scène ne correspondait pas exactement au 0 sur l'axe z. Il a donc fallu que je modifie en premier lieu mon sol, c'est pourquoi je me suis servie d'un *AxesHelper* que l'on peut voir sur la capture d'écran précédente.
 
 &nbsp;
 
@@ -327,13 +327,13 @@ Suite à la création de notre fonction import_obj() les ajouts d'objets se font
 
 J'ai cherché de nombreux modèles à importer sur Turbosquid, SketchFab et Poly mais il était parfois difficile de trouver des modèles 3D disponibles en .obj ce qui était un peu décevant. 
 
-Voici quelques exemples de modèles que je n'ai malheuresement pas pu trouver dans le format souhaité :
+Voici quelques exemples de modèles que je n'ai malheureusement pas pu trouver dans le format souhaité :
 
 ![Retsuko](./TP2/captures_ecran/mlt_retsuko.png)
 ![BMO](./TP2/captures_ecran/mlt_BMO.png)
 ![Bill cipher](./TP2/captures_ecran/mlt_bill_cipher.png)
 
-J'ai tout de fois trouver des modèles en obj en tapant directement "OBJ" dans la barre de recherche des sites pour trouver ceux qui l'avaient mis dans le titre car il n'existait pas de filtre de recherches par format. Ma scène ressemblait alors à ça : 
+J'ai toutefois trouvé des modèles en obj en tapant directement "OBJ" dans la barre de recherche des sites pour trouver ceux qui l'avaient mis dans le titre car il n'existait pas de filtre de recherches par format. Ma scène ressemblait alors à ça : 
 
 ![Plusieurs obj](./TP2/captures_ecran/plusieurs_obj.png)
 ![Plusieurs obj 2](./TP2/captures_ecran/plusieurs_obj_2.png)
@@ -342,7 +342,7 @@ J'ai tout de fois trouver des modèles en obj en tapant directement "OBJ" dans l
 
 **7) On constate que les objets fournis avec le TP ne sont pas lisses. Trouver une méthode pour lisser les objets.**
 
-Cette partie a été pour moi la plus difficile. J'ai en premier lieu, tenter de passer par la librairie three.js *SubdivisionModifier.js* qui se trouve [ici](https://github.com/mrdoob/three.js/blob/dev/examples/js/modifiers/SubdivisionModifier.js). N'arrivant pas au résultat voulu j'ai donc demander de l'aide à mes camarade et après un peu de recherche j'en suis arrivée à la méthode décrite ci-après.
+Cette partie a été pour moi la plus difficile. J'ai en premier lieu, tenter de passer par la librairie three.js *SubdivisionModifier.js* qui se trouve [ici](https://github.com/mrdoob/three.js/blob/dev/examples/js/modifiers/SubdivisionModifier.js). N'arrivant pas au résultat voulu j'ai donc demandé de l'aide à mes camarades et après un peu de recherche j'en suis arrivée à la méthode décrite ci-après.
 
 Pour lisser les objets on rajoute dans le load de notre fonction import_obj() un bloc de code entre les deux lignes suivante :
 
@@ -411,7 +411,7 @@ Grâce à notre fonction on ajoute un sabre à notre scène avec l'instruction s
 
 ![Saber texture](./TP2/captures_ecran/sabre_texture.png)
 
-Le sabre n'était clairement pas mon premier choix en terme d'import, en effet j'ai tenter d'ajouter de nombreux objets mlt à ma scène auparavant mais sans succès car les fichiers gratuits ne fonctionnaient pas correctement. Voici par exemple quelques modèles que j'ai voulu importer provenant de Turbosquid, SketchFab et Poly : 
+Le sabre n'était clairement pas mon premier choix en terme d'import, en effet j'ai tenté d'ajouter de nombreux objets mlt à ma scène auparavant mais sans succès car les fichiers gratuits ne fonctionnaient pas correctement. Voici par exemple quelques modèles que j'ai voulus importer provenant de Turbosquid, SketchFab et Poly : 
 
 ![Marcy](./TP2/captures_ecran/mlt_marcy.png)
 ![Chair](./TP2/captures_ecran/mlt_chair.jpg)
@@ -419,4 +419,4 @@ Le sabre n'était clairement pas mon premier choix en terme d'import, en effet j
 ![Journal](./TP2/captures_ecran/mlt_journal.png)
 ![W](./TP2/captures_ecran/mlt_W.jpg)
 
-Ne sachant pas si le problème venait des fichiers ou de ma fonction, Arthur Laurain m'as alors envoyé les fichiers de son sabre et Lucas Schmidt a tester les mêmes fichiers que moi avec sa propre fonction.
+Ne sachant pas si le problème venait des fichiers ou de ma fonction, Arthur Laurain m'as alors envoyé les fichiers de son sabre et Lucas Schmidt a testé les mêmes fichiers que moi avec sa propre fonction.
