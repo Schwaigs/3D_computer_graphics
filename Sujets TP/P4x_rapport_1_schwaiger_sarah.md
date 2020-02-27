@@ -317,7 +317,24 @@ Suite à la création de notre fonction import_obj() les ajouts d'objets se font
 
 &nbsp;
 
-**6) On constate que les objets fournis avec le TP ne sont pas lisses. Trouver une méthode pour lisser les objets.**
+**6) Agrémenter la scène de décors du TP1 avec des objets divers issus de fichiers .obj.**
+
+J'ai cherché de nombreux modèles à importer sur Turbosquid, SketchFab et Poly mais il était parfois difficile de trouver des modèles 3D disponibles en .obj ce qui était un peu décevant. 
+
+Voici quelques exemples de modèles que je n'ai malheuresement pas pu trouver dans le format souhaité :
+
+![Retsuko](./TP2/captures_ecran/mlt_retsuko.png)
+![BMO](./TP2/captures_ecran/mlt_BMO.png)
+![Bill cipher](./TP2/captures_ecran/mlt_bill_cipher.png)
+
+J'ai tout de fois trouver des modèles en obj en tapant directement "OBJ" dans la barre de recherche des sites pour trouver ceux qui l'avaient mis dans le titre car il n'existait pas de filtre de recherches par format. Ma scène ressemblait alors à ça : 
+
+![Plusieurs obj](./TP2/captures_ecran/plusieurs_obj.png)
+![Plusieurs obj 2](./TP2/captures_ecran/plusieurs_obj_2.png)
+
+&nbsp;
+
+**7) On constate que les objets fournis avec le TP ne sont pas lisses. Trouver une méthode pour lisser les objets.**
 
 Pour lisser les objets on rajoute dans le load de notre fonction import_obj() un bloc de code entre les deux lignes suivante :
 
@@ -343,7 +360,7 @@ La suite des instructions du load qui étaient faites sur obj utilisent maintena
 
 &nbsp;
 
-**7) Sur le même principe que pour l'OBJLoader, utiliser la classe MTLLoader (bibliothèque MTLLoader.js fournie) pour importer un mesh et ses textures et l'ajouter à la scène.**
+**8) Sur le même principe que pour l'OBJLoader, utiliser la classe MTLLoader (bibliothèque MTLLoader.js fournie) pour importer un mesh et ses textures et l'ajouter à la scène.**
 
 On crée une nouvelle fonction appelée import_mlt sur le même principe que importe_obj, celle-ci prends plusieurs paramètres :
 
@@ -384,3 +401,13 @@ Grâce à notre fonction on ajoute un sabre à notre scène avec l'instruction s
     import_mtl('saber.mtl','saber.obj',0.4,scene,4,-1,8)
 
 ![Saber texture](./TP2/captures_ecran/sabre_texture.png)
+
+Le sabre n'était clairement pas mon premier choix en terme d'import, en effet j'ai tenter d'ajouter de nombreux objets mlt à ma scène auparavant mais sans succès car les fichiers gratuits ne fonctionnaient pas correctement. Voici par exemple quelques modèles que j'ai voulu importer provenant de Turbosquid, SketchFab et Poly : 
+
+![Marcy](./TP2/captures_ecran/mlt_marcy.png)
+![Chair](./TP2/captures_ecran/mlt_chair.jpg)
+![Tree](./TP2/captures_ecran/mlt_tree.jpg)
+![Journal](./TP2/captures_ecran/mlt_journal.png)
+![W](./TP2/captures_ecran/mlt_W.jpg)
+
+Ne sachant pas si le problème venait des fichiers ou de ma fonction, Arthur Laurain m'as alors envoyé les fichiers de son sabre et Lucas Schmidt a tester les mêmes fichiers que moi avec sa propre fonction.
