@@ -41,7 +41,7 @@ function init() {
         scene.add(sun);
 
         //paneau de controle de la position de la lumière
-        dat_gui(sun);
+        dat_gui_position(sun);
 
         //sol
         var sol = new THREE.Mesh(
@@ -95,27 +95,40 @@ function init() {
                 }`
         //Pixel shader
         myFragmentShader = `  
+                uniform vec3 rgb;
                 void main() 
                 { 
-                gl_FragColor = vec4(0.5, 0.0, 0.8, 0.0);
+                gl_FragColor = vec4(rgb, 1.0);
                 }`
-        
-        shaderMaterialParams = { vertexShader: myVertexShader, fragmentShader: myFragmentShader };
+        //déclaration du type et de son conteneur Vector3 du registre uniform
+        myRGBUniform = { type: "v3", value: new THREE.Vector3() };
+        // on associe la déclaration type/conteneur au nom de la variable uniform "rgb"
+        myUniforms = { rgb : myRGBUniform };
+
+        shaderMaterialParams = { vertexShader: myVertexShader, fragmentShader: myFragmentShader, uniforms: myUniforms };
+        shaderMaterial = new THREE.ShaderMaterial(shaderMaterialParams);
 
         //sphere pour support TP3
-        var sphere = new THREE.Mesh(
-                new THREE.SphereGeometry(1,120,120),
-                new THREE.ShaderMaterial(shaderMaterialParams)
-        );
+        geometry_sphere = new THREE.SphereGeometry(1,120,120);
+        var sphere = new THREE.Mesh(geometry_sphere,shaderMaterial);
         sphere.position.set(4,1.5,-1);
         scene.add(sphere);
 
+        //definition couleur de base de la sphere
+        var r = 68;
+        var g = 171;
+        var b = 215;
+
+        //on l'assigne au registre uniform déclaré dans le pixel shader
+        shaderMaterial.uniforms.rgb.value.set(r%255/255,g%255/255,b%255/255); 
+
 }
 
-function animate() { //a compléter        
+function animate() { //a compléter   
         requestAnimationFrame(animate);
         controls.update();
-        renderer.render(scene, camera);       
+        renderer.render(scene, camera);   
+                   
 }
 
 function import_obj(name,hauteur,scene,posX,posZ,coeff_rot){
@@ -218,7 +231,7 @@ function import_obj_smooth(name,hauteur,scene,posX,posZ,coeff_rot){
         )
 }
 
-function dat_gui(element){
+function dat_gui_position(element){
         //valeurs de bases du panneau de contôle
         var parameters = {
                 lightx: element.position.x,
