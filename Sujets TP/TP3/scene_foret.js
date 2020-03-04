@@ -120,7 +120,9 @@ function init() {
         var b = 215;
 
         //on l'assigne au registre uniform déclaré dans le pixel shader
-        shaderMaterial.uniforms.rgb.value.set(r%255/255,g%255/255,b%255/255); 
+        shaderMaterial.uniforms.rgb.value.set(r%255/255,g%255/255,b%255/255);
+        console.log('color = ',shaderMaterial.uniforms.rgb.value); 
+        dat_gui_color(sphere);
 
 }
 
@@ -262,6 +264,25 @@ function dat_gui_position(element){
                         element.position.z = value;
                 }
         ); 
+}
+
+function dat_gui_color(element){
+        //valeurs de bases du panneau de contôle
+        var parameters = {
+                color: element.material.uniforms.rgb.value,
+        };
+
+        var gui = new dat.GUI();
+
+        var shader_fold = gui.addFolder('Shader');
+        //Définition des 3 valeurs sur lequelles ont peut influer 
+        var color_sphere = shader_fold.addColor( parameters, 'color' ).listen();  
+        shader_fold.open();
+        color_sphere.onChange(
+                function(value) { 
+                        element.marerial.color.setStyle(value);
+                }
+        );
 }
 
 init();
