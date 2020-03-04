@@ -109,7 +109,7 @@ function init() {
         shaderMaterial = new THREE.ShaderMaterial(shaderMaterialParams);
 
         //sphere pour support TP3
-        geometry_sphere = new THREE.SphereGeometry(1,120,120);
+        geometry_sphere = new THREE.SphereGeometry(1,25,25);
         var sphere = new THREE.Mesh(geometry_sphere,shaderMaterial);
         sphere.position.set(4,1.5,-1);
         scene.add(sphere);
@@ -123,6 +123,10 @@ function init() {
         shaderMaterial.uniforms.rgb.value.set(r%255/255,g%255/255,b%255/255);
         console.log('color = ',shaderMaterial.uniforms.rgb.value); 
         dat_gui_color(sphere);
+
+        //visualisation des normales
+        var vertex_helper = new VertexNormalsHelper(sphere, 1, 0x00ff00, 0.5);
+        scene.add(vertex_helper);
 
 }
 
