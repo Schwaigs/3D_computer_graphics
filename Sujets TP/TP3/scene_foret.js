@@ -269,20 +269,35 @@ function dat_gui_position(element){
 function dat_gui_color(element){
         //valeurs de bases du panneau de contôle
         var parameters = {
-                color: element.material.uniforms.rgb.value,
+                color_r : ((element.material.uniforms.rgb.value.x)*255)/1,
+                color_g : ((element.material.uniforms.rgb.value.y)*255)/1,
+                color_b : ((element.material.uniforms.rgb.value.z)*255)/1,
         };
 
         var gui = new dat.GUI();
 
         var shader_fold = gui.addFolder('Shader');
         //Définition des 3 valeurs sur lequelles ont peut influer 
-        var color_sphere = shader_fold.addColor( parameters, 'color' ).listen();  
+        var val_r = shader_fold.add( parameters, 'color_r' ).min(0).max(255).step(1).listen();
+        var val_g = shader_fold.add( parameters, 'color_g' ).min(0).max(255).step(1).listen();
+        var val_b = shader_fold.add( parameters, 'color_b' ).min(0).max(255).step(1).listen();  
         shader_fold.open();
-        color_sphere.onChange(
+        
+        val_r.onChange(
                 function(value) { 
-                        element.marerial.color.setStyle(value);
+                        element.material.uniforms.rgb.value.setX(value%255/255);
                 }
         );
+        val_g.onChange(
+                function(value) { 
+                        element.material.uniforms.rgb.value.setY(value%255/255);
+                }
+        ); 
+        val_b.onChange(
+                function(value) { 
+                        element.material.uniforms.rgb.value.setZ(value%255/255);
+                }
+        ); 
 }
 
 init();
