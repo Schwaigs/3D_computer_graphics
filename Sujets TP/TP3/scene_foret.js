@@ -84,15 +84,28 @@ function init() {
         import_obj_smooth('cow.obj',2,scene,-2,3,0);
         //import_obj('Orange.obj',1.5,scene,4,-1,0);
 
+        
+        //Création du ShaderMaterial
+        //Vertex shader
+        myVertexShader = `
+                void main() 
+                {
+                vec4 worldPos = modelMatrix * vec4(position, 1.0);  
+                gl_Position = projectionMatrix * viewMatrix * worldPos;
+                }`
+        //Pixel shader
+        myFragmentShader = `  
+                void main() 
+                { 
+                gl_FragColor = vec4(0.5, 0.0, 0.8, 0.0);
+                }`
+        
+        shaderMaterialParams = { vertexShader: myVertexShader, fragmentShader: myFragmentShader };
+
         //sphere pour support TP3
         var sphere = new THREE.Mesh(
                 new THREE.SphereGeometry(1,120,120),
-                new THREE.ShaderMaterial({
-                        uniforms: {
-                                time: { value: 1.0 },
-                                resolution: { value: new THREE.Vector2() }
-                        },
-                })
+                new THREE.ShaderMaterial(shaderMaterialParams)
         );
         sphere.position.set(4,1.5,-1);
         scene.add(sphere);
