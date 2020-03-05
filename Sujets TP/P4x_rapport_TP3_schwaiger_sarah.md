@@ -21,7 +21,7 @@ On redéfinit la couleur que prendra notre shader avec l'instruction suivante :
 
     gl_FragColor = vec4(0.5, 0.0, 0.8, 1.0);
 
-Et on observe alors le résultat ci-dessous, qui nous prouve le fonctionnement de notre shader.
+Et on observe alors le résultat ci-dessous, qui nous prouve le fonctionnement de notre shader.  
 ![basic shader](./TP3/captures_ecran/sphere_shader_material_change_color.png)  
 
 &nbsp;
@@ -40,8 +40,7 @@ La couleur du shader dépend alors de 3 variables r, g et b qui sont définits a
 
 **4) Connecter la valeur de cette couleur sur une interface dat-gui. Observez les changements de couleurs en fonction de vos changements dans l'interface.**  
 
-Dans un premier temps j'ai souhaité changer la couleur du Mesh à l'aide d'une interface spécifique aux couleurs, semblable à celle ci-après.
-
+Dans un premier temps j'ai souhaité changer la couleur du Mesh à l'aide d'une interface spécifique aux couleurs, semblable à celle ci-après.  
 ![color gui](./TP3/captures_ecran/color_gui.png)  
 
 J'ai alors créé une nouvelle fonction *dat_gui_color()*. Pour cela je me suis inspirée de ce que j'ai trouvé sur [ce forum](https://discourse.threejs.org/t/select-objects-with-mouse-and-change-color-with-dat-gui-solved/4804/4). Je souhaitais récupérer pour l'initialisation, la couleur de mon mesh à l'aide de l'instruction suivante :
@@ -58,12 +57,10 @@ Le résultat ne compilant absolument pas, je me suis alors tournée vers la solu
     color_g : ((element.material.uniforms.rgb.value.y)*255)/1,
     color_b : ((element.material.uniforms.rgb.value.z)*255)/1,
 
-Puis, j'ai suivis simplement le même modèle que le changement de position de mon soleil. Cela m'a alors permis d'obtenir le résultat suivant :
-
+Puis, j'ai suivis simplement le même modèle que le changement de position de mon soleil. Cela m'a alors permis d'obtenir le résultat suivant :  
 ![gui rbg](./TP3/captures_ecran/sphere_shader_material_change_color_gui.png)
 
-Cependant, en faisant varier les couleurs je me rends compte que celles-ci réagissent assez bizarrement. Le résultat obtenu ne correspondant pas toujours à celui attendu. Le plus gros bug étant la disparition d'une couleur quand on la met à 255.
-
+Cependant, en faisant varier les couleurs je me rends compte que celles-ci réagissent assez bizarrement. Le résultat obtenu ne correspondant pas toujours à celui attendu. Le plus gros bug étant la disparition d'une couleur quand on la met à 255.  
 ![gui bug rbg](./TP3/captures_ecran/bug_sphere_shader_material_change_color_gui.png)
 
 Le problème vient en fait du %255/255 que l'on applique à nos couleurs pour les reconvertir sous forme de flottant entre 0 et 1. En effet, 255%255 équivaut à un 0. On remplace alors dans le code tous les 255 par 256 pour résoudre le souci.
@@ -81,7 +78,7 @@ Puis lors du changement de couleur je passe à présent par des substring de la 
     var b = parseInt(parameters.color.substring(5,7),16);
     element.material.uniforms.rgb.value.set(r%256/256,g%256/256,b%256/256);
 
-Ce qui me donne ainsi, le résultat ci-dessous :
+Ce qui me donne ainsi, le résultat ci-dessous.  
 ![gui hexa](./TP3/captures_ecran/resolve_sphere_shader_material_change_color_gui.png)
 
 &nbsp;
@@ -95,7 +92,7 @@ Ensuite j'instancie mon VertexNormalsHelper en lui donnant en paramètre le Mesh
     var vertex_helper = new VertexNormalsHelper(sphere, 1, 0x00ff00, 0.5);
     scene.add(vertex_helper);
 
-Je réduis ensuite le nombre de segment de ma sphère quand je la créer afin d'obtenir un résultat plus visible.
+Je réduis ensuite le nombre de segment de ma sphère quand je la créer afin d'obtenir un résultat plus visible.  
 ![vertex](./TP3/captures_ecran/sphere_shader_VertexNormalsHelper.png)
 
 &nbsp;
