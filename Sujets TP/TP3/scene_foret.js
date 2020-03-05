@@ -41,7 +41,8 @@ function init() {
         scene.add(sun);
 
         //paneau de controle de la position de la lumière
-        dat_gui_position(sun);
+        var gui = new dat.GUI();
+        dat_gui_position(sun,gui);
 
         //sol
         var sol = new THREE.Mesh(
@@ -120,9 +121,9 @@ function init() {
         var b = 215;
 
         //on l'assigne au registre uniform déclaré dans le pixel shader
-        shaderMaterial.uniforms.rgb.value.set(r%255/255,g%255/255,b%255/255);
+        shaderMaterial.uniforms.rgb.value.set(r%256/256,g%256/256,b%256/256);
         console.log('color = ',shaderMaterial.uniforms.rgb.value); 
-        dat_gui_color(sphere);
+        dat_gui_color(sphere,gui);
 
         //visualisation des normales
         var vertex_helper = new VertexNormalsHelper(sphere, 1, 0x00ff00, 0.5);
@@ -237,15 +238,13 @@ function import_obj_smooth(name,hauteur,scene,posX,posZ,coeff_rot){
         )
 }
 
-function dat_gui_position(element){
+function dat_gui_position(element,gui){
         //valeurs de bases du panneau de contôle
         var parameters = {
                 lightx: element.position.x,
                 lighty: element.position.y,
                 lightz: element.position.z,
         };
-
-        var gui = new dat.GUI();
 
         var light_pos = gui.addFolder('Position');
         //Définition des 3 valeurs sur lequelles ont peut influer 
@@ -270,38 +269,24 @@ function dat_gui_position(element){
         ); 
 }
 
-function dat_gui_color(element){
+function dat_gui_color(element,gui){
         //valeurs de bases du panneau de contôle
         var parameters = {
-                color_r : ((element.material.uniforms.rgb.value.x)*255)/1,
-                color_g : ((element.material.uniforms.rgb.value.y)*255)/1,
-                color_b : ((element.material.uniforms.rgb.value.z)*255)/1,
+                color: "#44abd7"
         };
-
-        var gui = new dat.GUI();
 
         var shader_fold = gui.addFolder('Shader');
         //Définition des 3 valeurs sur lequelles ont peut influer 
-        var val_r = shader_fold.add( parameters, 'color_r' ).min(0).max(255).step(1).listen();
-        var val_g = shader_fold.add( parameters, 'color_g' ).min(0).max(255).step(1).listen();
-        var val_b = shader_fold.add( parameters, 'color_b' ).min(0).max(255).step(1).listen();  
-        shader_fold.open();
-        
-        val_r.onChange(
-                function(value) { 
-                        element.material.uniforms.rgb.value.setX(value%255/255);
+        shader_fold.addColor( parameters, 'color' ).onChange(
+                function() { 
+                        var r = parseInt(parameters.color.substring(1,3),16);
+                        var g = parseInt(parameters.color.substring(3,5),16);
+                        var b = parseInt(parameters.color.substring(5,7),16);
+                        element.material.uniforms.rgb.value.set(r%256/256,g%256/256,b%256/256);
                 }
         );
-        val_g.onChange(
-                function(value) { 
-                        element.material.uniforms.rgb.value.setY(value%255/255);
-                }
-        ); 
-        val_b.onChange(
-                function(value) { 
-                        element.material.uniforms.rgb.value.setZ(value%255/255);
-                }
-        ); 
+
+        shader_fold.open();
 }
 
 init();
