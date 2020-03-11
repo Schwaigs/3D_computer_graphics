@@ -92,7 +92,7 @@ function init() {
                 varying vec4 worldPos;
                 void main() 
                 {
-                vec4 worldPos = modelMatrix * vec4(position, 1.0);  
+                worldPos = modelMatrix * vec4(position, 1.0);  
                 gl_Position = projectionMatrix * viewMatrix * worldPos;
                 normales = normal;
                 }`
@@ -104,12 +104,12 @@ function init() {
                 uniform vec3 rgb;
                 void main()
                 { 
-                vec3 lambert = dot((pos_lum - worldPos.xyz),normales) * rgb;
+                vec3 lambert = dot(normalize(pos_lum - worldPos.xyz),normales) * rgb;
                 gl_FragColor = vec4(lambert, 1.0);
                 }`
         //déclaration du type et de son conteneur Vector3 du registre uniform
         myRGBUniform = { type: "v3", value: new THREE.Vector3() };
-        myPosUniform_lum = { type: "v3", value: new THREE.Vector3("ici") };
+        myPosUniform_lum = { type: "v3", value: new THREE.Vector3() };
 
         // on associe la déclaration type/conteneur au nom de la variable uniform "rgb"
         myUniforms = { rgb : myRGBUniform, pos_lum : myPosUniform_lum };
@@ -123,9 +123,9 @@ function init() {
         dat_gui_position(sun,gui,shaderMaterial);
 
         //sphere pour support TP3
-        geometry_sphere = new THREE.SphereGeometry(1,20,20);
+        geometry_sphere = new THREE.SphereGeometry(1,30,30);
         var sphere = new THREE.Mesh(geometry_sphere,shaderMaterial);
-        sphere.position.set(2,1.5,-1);
+        sphere.position.set(3,1.5,-1);
         scene.add(sphere);
 
         //definition couleur de base de la sphere
@@ -139,8 +139,22 @@ function init() {
         dat_gui_color(sphere,gui);
 
         //visualisation des normales
-        var vertex_helper = new VertexNormalsHelper(sphere, 1, 0x00ff00, 0.5);
-        scene.add(vertex_helper);
+        //var vertex_helper = new VertexNormalsHelper(sphere, 1, 0x00ff00, 0.5);
+        //scene.add(vertex_helper);
+
+        //plusieurs spheres pour le test de l'effet de la lumière 
+        var sphere2 = new THREE.Mesh(geometry_sphere,shaderMaterial);
+        sphere2.position.set(-5,1,-1);
+        scene.add(sphere2);
+
+        var sphere3 = new THREE.Mesh(geometry_sphere,shaderMaterial);
+        sphere3.position.set(-5,0.8,-7);
+        scene.add(sphere3);
+
+        var sphere4 = new THREE.Mesh(geometry_sphere,shaderMaterial);
+        sphere4.position.set(3,0.5,-7);
+        scene.add(sphere4);
+
 
 }
 
