@@ -105,7 +105,7 @@ function init() {
                 void main()
                 { 
                 vec3 lambert = dot(normalize(pos_lum - worldPos.xyz),normales) * rgb;
-                gl_FragColor = vec4(lambert, 1.0);
+                gl_FragColor = vec4(ceil(lambert/0.25)*rgb, 1.0);
                 }`
         //déclaration du type et de son conteneur Vector3 du registre uniform
         myRGBUniform = { type: "v3", value: new THREE.Vector3() };
@@ -154,7 +154,6 @@ function init() {
         var sphere4 = new THREE.Mesh(geometry_sphere,shaderMaterial);
         sphere4.position.set(3,0.5,-7);
         scene.add(sphere4);
-
 
 }
 
