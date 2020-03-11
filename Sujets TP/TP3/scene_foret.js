@@ -40,9 +40,8 @@ function init() {
         sun.position.set(8,8,-8);
         scene.add(sun);
 
-        //paneau de controle de la position de la lumière
+        //paneau de controle graphique
         var gui = new dat.GUI();
-        dat_gui_position(sun,gui);
 
         //sol
         var sol = new THREE.Mesh(
@@ -89,30 +88,44 @@ function init() {
         //Création du ShaderMaterial
         //Vertex shader
         myVertexShader = `
+                varying vec3 normales;
+                varying vec4 worldPos;
                 void main() 
                 {
                 vec4 worldPos = modelMatrix * vec4(position, 1.0);  
                 gl_Position = projectionMatrix * viewMatrix * worldPos;
+                normales = normal;
                 }`
         //Pixel shader
-        myFragmentShader = `  
+        myFragmentShader = `
+                varying vec3 normales;
+                varying vec4 worldPos;
+                uniform vec3 pos_lum;
                 uniform vec3 rgb;
-                void main() 
+                void main()
                 { 
-                gl_FragColor = vec4(rgb, 1.0);
+                vec3 lambert = dot((pos_lum - worldPos.xyz),normales) * rgb;
+                gl_FragColor = vec4(lambert, 1.0);
                 }`
         //déclaration du type et de son conteneur Vector3 du registre uniform
         myRGBUniform = { type: "v3", value: new THREE.Vector3() };
+        myPosUniform_lum = { type: "v3", value: new THREE.Vector3("ici") };
+
         // on associe la déclaration type/conteneur au nom de la variable uniform "rgb"
-        myUniforms = { rgb : myRGBUniform };
+        myUniforms = { rgb : myRGBUniform, pos_lum : myPosUniform_lum };
 
         shaderMaterialParams = { vertexShader: myVertexShader, fragmentShader: myFragmentShader, uniforms: myUniforms };
         shaderMaterial = new THREE.ShaderMaterial(shaderMaterialParams);
 
+        shaderMaterial.uniforms.pos_lum.value.set(sun.position.x,sun.position.y,sun.position.z);
+        console.log('lum position = ',shaderMaterial.uniforms.pos_lum.value); 
+
+        dat_gui_position(sun,gui,shaderMaterial);
+
         //sphere pour support TP3
-        geometry_sphere = new THREE.SphereGeometry(1,25,25);
+        geometry_sphere = new THREE.SphereGeometry(1,20,20);
         var sphere = new THREE.Mesh(geometry_sphere,shaderMaterial);
-        sphere.position.set(4,1.5,-1);
+        sphere.position.set(2,1.5,-1);
         scene.add(sphere);
 
         //definition couleur de base de la sphere
@@ -129,33 +142,6 @@ function init() {
         var vertex_helper = new VertexNormalsHelper(sphere, 1, 0x00ff00, 0.5);
         scene.add(vertex_helper);
 
-        //Vertex shader
-        myVertexShader = `
-                varying vec3 normales;
-                void main() 
-                {
-                vec4 worldPos = modelMatrix * vec4(position, 1.0);  
-                gl_Position = projectionMatrix * viewMatrix * worldPos;
-                normales = normal;
-                }`
-        //Pixel shader
-        myFragmentShader = `
-                varying vec3 normales;
-                void main() 
-                { 
-                gl_FragColor = vec4(normales, 1.0);
-                }`
-        
-        shaderMaterialParams = { vertexShader: myVertexShader, fragmentShader: myFragmentShader};
-        shaderMaterial = new THREE.ShaderMaterial(shaderMaterialParams);
- 
-        //sphere pour support TP3
-        geometry_sphere = new THREE.SphereGeometry(1,25,25);
-        var sphere = new THREE.Mesh(geometry_sphere,shaderMaterial);
-        sphere.position.set(4,1.5,-1);
-        scene.add(sphere);
-
-        
 }
 
 function animate() { //a compléter   
@@ -265,7 +251,7 @@ function import_obj_smooth(name,hauteur,scene,posX,posZ,coeff_rot){
         )
 }
 
-function dat_gui_position(element,gui){
+function dat_gui_position(element,gui,shaderMaterial){
         //valeurs de bases du panneau de contôle
         var parameters = {
                 lightx: element.position.x,
@@ -282,16 +268,19 @@ function dat_gui_position(element,gui){
         val_x.onChange(
                 function(value) { 
                         element.position.x = value;
+                        shaderMaterial.uniforms.pos_lum.value.x = value;
                 }
         );
         val_y.onChange(
                 function(value) { 
                         element.position.y = value;
+                        shaderMaterial.uniforms.pos_lum.value.y = value;
                 }
         ); 
         val_z.onChange(
                 function(value) { 
                         element.position.z = value;
+                        shaderMaterial.uniforms.pos_lum.value.z = value;
                 }
         ); 
 }
