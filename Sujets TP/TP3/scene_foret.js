@@ -129,6 +129,33 @@ function init() {
         var vertex_helper = new VertexNormalsHelper(sphere, 1, 0x00ff00, 0.5);
         scene.add(vertex_helper);
 
+        //Vertex shader
+        myVertexShader = `
+                varying vec3 normales;
+                void main() 
+                {
+                vec4 worldPos = modelMatrix * vec4(position, 1.0);  
+                gl_Position = projectionMatrix * viewMatrix * worldPos;
+                normales = normal;
+                }`
+        //Pixel shader
+        myFragmentShader = `
+                varying vec3 normales;
+                void main() 
+                { 
+                gl_FragColor = vec4(normales, 1.0);
+                }`
+        
+        shaderMaterialParams = { vertexShader: myVertexShader, fragmentShader: myFragmentShader};
+        shaderMaterial = new THREE.ShaderMaterial(shaderMaterialParams);
+ 
+        //sphere pour support TP3
+        geometry_sphere = new THREE.SphereGeometry(1,25,25);
+        var sphere = new THREE.Mesh(geometry_sphere,shaderMaterial);
+        sphere.position.set(4,1.5,-1);
+        scene.add(sphere);
+
+        
 }
 
 function animate() { //a compléter   
