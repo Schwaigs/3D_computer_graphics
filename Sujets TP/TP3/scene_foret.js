@@ -80,7 +80,7 @@ function init() {
         scene.add(feuilles);
 
         //ajout lapin et vache obj
-        import_obj('bunny.obj',0.8,scene,2,2,-5,0);
+        import_obj('bunny.obj',0.8,scene,2,2,-5,null);
         import_obj_smooth('cow.obj',2,scene,-2,3,0);
         //import_obj('Orange.obj',1.5,scene,4,-1,0);
 
@@ -155,7 +155,7 @@ function init() {
         sphere4.position.set(3,0.5,-7);
         scene.add(sphere4);
 
-        import_obj('Orange.obj',1.5,scene,4,-1,shaderMaterial);
+        import_obj('Orange.obj',1.5,scene,8,-1,shaderMaterial);
 }
 
 function animate() { //a compléter   
@@ -167,14 +167,14 @@ function animate() { //a compléter
 
 function import_obj(name,hauteur,scene,posX,posZ,coeff_rot,material){
         var loader = new THREE.OBJLoader();
-        /*if(material !=0){
+        /*if(material != null){
                 loader.setMaterials(material);
         }*/
         loader.load(
                 name,
                 function(object){
                         obj=object.children[0];
-                        /*if(material !=0){
+                        /*if(material != null){
                                 obj = new THREE.Mesh(obj,material);
                         }*/
                         scene.add(obj);
