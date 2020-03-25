@@ -22,7 +22,7 @@ function init() {
         scene.add( axesHelper );
 
         //déplacement dans la scène à l'aide de la souris
-        controls = new THREE.OrbitControls( camera, renderer.domElement );
+        //controls = new THREE.OrbitControls( camera, renderer.domElement );
 
 
         //source de lumière
@@ -61,7 +61,7 @@ function init() {
         //effet de la balle
         raycaster = new THREE.Raycaster();
         mouse = new THREE.Vector2();
-        window.addEventListener( 'mousemove', onMouseMove, false );
+        window.addEventListener( 'mousedown', onClick, false );
 
         //Création table pour le chamboule tout
         var pied_geo = new THREE.CylinderGeometry(0.12,0.12,1.5,20);
@@ -109,7 +109,7 @@ function init() {
 
 function animate() { //a compléter   
         requestAnimationFrame(animate);
-        controls.update();
+        //controls.update();
         renderer.render(scene, camera);
         render();          
 }
@@ -148,7 +148,7 @@ function dat_gui_position(element,gui,shaderMaterial){
         ); 
 }
 
-function onMouseMove( event ){
+function onClick( event ){
 
         mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
         mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
@@ -160,6 +160,7 @@ function render() {
 
         //Cherche les objets de notre chamboule tout qui vont renter en collision avec le balle
         var intersects = raycaster.intersectObjects( boxes );
+        console.log(intersects);
 
         for ( var i = 0; i < intersects.length; i++ ) {
 
@@ -170,6 +171,7 @@ function render() {
         renderer.render( scene, camera );
 
 }
+
 
 init();
 animate();
