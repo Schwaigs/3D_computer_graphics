@@ -3,13 +3,14 @@ var H = 700;
 
 var container = document.querySelector('#threejsContainer');
 
-var scene, camera, renderer, controls, raycaster, mouse, boxes, ball, clic, direction;
+var scene, camera, renderer, controls, raycaster, mouse, boxes, ball, clic, direction, posDepart;
 
 function init() {        
         scene = new THREE.Scene();        
 
         camera = new THREE.PerspectiveCamera(75, W / H, 0.1, 1000);
-        camera.position.set(0, 3, 10);
+        posDepart = new THREE.Vector3(0, 3, 10);
+        camera.position.set(posDepart.x, posDepart.y, posDepart.z);
         camera.lookAt(scene.position);
         scene.add(camera);
         
@@ -22,7 +23,7 @@ function init() {
         scene.add( axesHelper );
 
         //déplacement dans la scène à l'aide de la souris
-        //controls = new THREE.OrbitControls( camera, renderer.domElement );
+        controls = new THREE.OrbitControls( camera, renderer.domElement );
 
 
         //source de lumière
@@ -55,13 +56,12 @@ function init() {
                 new THREE.SphereGeometry(0.5,30,30),
                 new THREE.MeshLambertMaterial({ color: "#f9a40f" })
         );
-        ball.position.set(0,3,10);
+        ball.position.set(posDepart.x, posDepart.y, posDepart.z);
         scene.add(ball);
 
         //effet de la balle
         raycaster = new THREE.Raycaster();
         mouse = new THREE.Vector2();
-        window.addEventListener( 'mousedown', onClick, false );
 
         //Création table pour le chamboule tout
         var pied_geo = new THREE.CylinderGeometry(0.12,0.12,1.5,20);
@@ -109,8 +109,9 @@ function init() {
 
 function animate() { //a compléter   
         requestAnimationFrame(animate);
-        //controls.update();
+        controls.update();
         renderer.render(scene, camera);
+        window.addEventListener( 'mousedown', onClick, false );
         if (clic == true){
                 throwBall();
         }
@@ -183,6 +184,7 @@ function throwBall(){
         ball.position.x += direction.x;
         if (ball.position.z < -6){
                 clic = false;
+                ball.position.set(posDepart.x, posDepart.y, posDepart.z);
         }
 }
 
