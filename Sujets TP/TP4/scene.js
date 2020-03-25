@@ -3,12 +3,12 @@ var H = 700;
 
 var container = document.querySelector('#threejsContainer');
 
-var scene, camera, renderer, controls, raycaster, mouse, boxes, ball, clic, direction, posDepart;
+var scene, camera, renderer, controls, raycaster, mouse, boxes, ball, clic, direction, posDepart, ballRadius;
 
 function init() {        
         scene = new THREE.Scene();        
 
-        camera = new THREE.PerspectiveCamera(50, W / H, 0.1, 1000);
+        camera = new THREE.PerspectiveCamera(75, W / H, 0.1, 1000);
         posDepart = new THREE.Vector3(0, 3, -10);
         camera.position.set(posDepart.x, posDepart.y, posDepart.z);
         camera.lookAt(scene.position);
@@ -24,7 +24,7 @@ function init() {
 
         //source de lumière
         var pointLight_sun = new THREE.PointLight( 0xffffff, 1, 100 );
-        pointLight_sun.position.set( 0,10,-10 );
+        pointLight_sun.position.set(0,10,-10);
 
         //représentation de la source de lumière par un soleil
         var sun = new THREE.Mesh(
@@ -48,8 +48,9 @@ function init() {
         scene.add(sol);
 
         //création de la balle
+        ballRadius = 0.5;
         ball = new THREE.Mesh(
-                new THREE.SphereGeometry(0.5,30,30),
+                new THREE.SphereGeometry(ballRadius,30,30),
                 new THREE.MeshLambertMaterial({ color: "#f9a40f" })
         );
         ball.position.set(posDepart.x, posDepart.y, posDepart.z);
@@ -100,6 +101,7 @@ function init() {
         scene.add(box3);
         boxes = [box1,box2,box3];
 
+
 }
 
 function animate() { //a compléter   
@@ -109,8 +111,7 @@ function animate() { //a compléter
         window.addEventListener( 'mousedown', onClick, false );
         if (clic == true){
                 throwBall();
-        }
-        render();        
+        } 
 }
 
 function dat_gui_position(element,gui,shaderMaterial){
@@ -148,39 +149,54 @@ function dat_gui_position(element,gui,shaderMaterial){
 }
 
 function onClick( event ){
-
         mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
         mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+        raycaster.setFromCamera( mouse, camera );
+        direction=raycaster.ray.direction;
         clic = true;
 }
 
-function render() {
-
-        raycaster.setFromCamera( mouse, camera );
-        direction=raycaster.ray.direction;
-
-        //Cherche les objets de notre chamboule tout qui vont renter en collision avec le balle
-        var intersects = raycaster.intersectObjects( boxes );
-        console.log(intersects);
-
-        for ( var i = 0; i < intersects.length; i++ ) {
-
-                intersects[ i ].object.material.color.set( "#FF0000" );
-
-        }
-
-        renderer.render( scene, camera );
-
-}
-
 function throwBall(){
-        ball.position.z += direction.z;
-        ball.position.y += direction.y;
-        ball.position.x += direction.x;
+        ball.position.z += (direction.z/10);
+        ball.position.y += (direction.y/10);
+        ball.position.x += (direction.x/10);
+        console.log("Position de la balle = { "+ball.position.x+" , "+ball.position.y+" , "+ball.position.z+" }");
+        collisionDetection();
         if (ball.position.z > 8){
                 clic = false;
                 ball.position.set(posDepart.x, posDepart.y, posDepart.z);
         }
+}
+
+function collisionDetection(){
+        console.log("   Détection des collisions");
+        for ( var i = 0; i < boxes.length; i++ ) {
+                console.log("   Box "+i);
+                boxes[i].geometry.computeBoundingBox();
+                var geo = boxes[i].geometry.boundingBox;
+                console.log("           minZ = "+(boxes[i].position.z+geo.min.z)+"  maxZ = "+(boxes[i].position.z+geo.max.z));
+                
+                var x = Math.max(boxes[i].position.x+geo.min.x, Math.min(ball.position.x, boxes[i].position.x+geo.max.x));
+                var y = Math.max(boxes[i].position.y+geo.min.y, Math.min(ball.position.y, boxes[i].position.y+geo.max.y));
+                var z = Math.max(boxes[i].position.z+geo.min.z, Math.min(ball.position.z, boxes[i].position.z+geo.max.z));
+                console.log("           x = "+x+"  y = "+y+"  z = "+z);
+
+                var distance = Math.sqrt(
+                        (x - ball.position.x) * (x - ball.position.x) + 
+                        (y - ball.position.y) * (y - ball.position.y) + 
+                        (z - ball.position.z) * (z - ball.position.z)
+                );
+
+                console.log("           Distance = "+distance+"  Rayon = "+ballRadius);
+                if (distance < ballRadius){
+                        collision(i);
+                }
+        }
+}
+
+function collision(index){
+        console.log("           Collision avec box "+index);
+        boxes[index].material.color.set( "#00FF00" );
 }
 
 init();
