@@ -3,13 +3,13 @@ var H = 700;
 
 var container = document.querySelector('#threejsContainer');
 
-var scene, camera, renderer, controls, raycaster, mouse, boxes;
+var scene, camera, renderer, controls, raycaster, mouse, boxes, ball, clic;
 
 function init() {        
         scene = new THREE.Scene();        
 
         camera = new THREE.PerspectiveCamera(75, W / H, 0.1, 1000);
-        camera.position.set(0, 4, 6);
+        camera.position.set(0, 10, 10);
         camera.lookAt(scene.position);
         scene.add(camera);
         
@@ -51,11 +51,11 @@ function init() {
         scene.add(sol);
 
         //création de la balle
-        var ball = new THREE.Mesh(
-                new THREE.SphereGeometry(1,30,30),
+        ball = new THREE.Mesh(
+                new THREE.SphereGeometry(0.5,30,30),
                 new THREE.MeshLambertMaterial({ color: "#f9a40f" })
         );
-        ball.position.set(0,4,6);
+        ball.position.set(0,2,6);
         scene.add(ball);
 
         //effet de la balle
@@ -111,7 +111,14 @@ function animate() { //a compléter
         requestAnimationFrame(animate);
         //controls.update();
         renderer.render(scene, camera);
-        render();          
+        if (clic == true){
+                ball.position.z -= 0.2;
+                console.log(ball.position.z);
+                if (ball.position.z < -6){
+                        clic = false;
+                }
+        }
+        render();        
 }
 
 function dat_gui_position(element,gui,shaderMaterial){
@@ -152,12 +159,13 @@ function onClick( event ){
 
         mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
         mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+        clic = true;
 }
 
 function render() {
 
         raycaster.setFromCamera( mouse, camera );
-
+      
         //Cherche les objets de notre chamboule tout qui vont renter en collision avec le balle
         var intersects = raycaster.intersectObjects( boxes );
         console.log(intersects);
@@ -171,7 +179,6 @@ function render() {
         renderer.render( scene, camera );
 
 }
-
 
 init();
 animate();
