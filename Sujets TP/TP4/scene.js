@@ -3,13 +3,13 @@ var H = 700;
 
 var container = document.querySelector('#threejsContainer');
 
-var scene, camera, renderer, controls, raycaster, mouse, boxes, ball, clic;
+var scene, camera, renderer, controls, raycaster, mouse, boxes, ball, clic, direction;
 
 function init() {        
         scene = new THREE.Scene();        
 
         camera = new THREE.PerspectiveCamera(75, W / H, 0.1, 1000);
-        camera.position.set(0, 10, 10);
+        camera.position.set(0, 3, 10);
         camera.lookAt(scene.position);
         scene.add(camera);
         
@@ -55,7 +55,7 @@ function init() {
                 new THREE.SphereGeometry(0.5,30,30),
                 new THREE.MeshLambertMaterial({ color: "#f9a40f" })
         );
-        ball.position.set(0,2,6);
+        ball.position.set(0,3,10);
         scene.add(ball);
 
         //effet de la balle
@@ -112,11 +112,7 @@ function animate() { //a compléter
         //controls.update();
         renderer.render(scene, camera);
         if (clic == true){
-                ball.position.z -= 0.2;
-                console.log(ball.position.z);
-                if (ball.position.z < -6){
-                        clic = false;
-                }
+                throwBall();
         }
         render();        
 }
@@ -165,7 +161,8 @@ function onClick( event ){
 function render() {
 
         raycaster.setFromCamera( mouse, camera );
-      
+        direction=raycaster.ray.direction;
+
         //Cherche les objets de notre chamboule tout qui vont renter en collision avec le balle
         var intersects = raycaster.intersectObjects( boxes );
         console.log(intersects);
@@ -178,6 +175,15 @@ function render() {
 
         renderer.render( scene, camera );
 
+}
+
+function throwBall(){
+        ball.position.z += direction.z;
+        ball.position.y += direction.y;
+        ball.position.x += direction.x;
+        if (ball.position.z < -6){
+                clic = false;
+        }
 }
 
 init();
