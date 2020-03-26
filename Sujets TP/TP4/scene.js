@@ -1,9 +1,10 @@
 var W = 1000;
 var H = 700;
+var G = new THREE.Vector3(0,-0.02,0);
 
 var container = document.querySelector('#threejsContainer');
 
-var scene, camera, renderer, controls, raycaster, mouse, boxes, ball, clic, direction, posDepart, ballRadius;
+var scene, camera, renderer, controls, raycaster, mouse, boxes, ball, clic, direction, posDepart, ballRadius, table;
 
 function init() {        
         scene = new THREE.Scene();        
@@ -76,7 +77,7 @@ function init() {
         pied4.position.set(-2.5,0.8,5);
         scene.add(pied4);
         var table_geo = new THREE.BoxGeometry(5.3,0.2,2.3);
-        var table = new THREE.Mesh(table_geo,table_mat);
+        table = new THREE.Mesh(table_geo,table_mat);
         table.position.set(0,1.5,6);
         scene.add(table);
 
@@ -157,9 +158,9 @@ function onClick( event ){
 }
 
 function throwBall(){
-        ball.position.z += (direction.z/10);
-        ball.position.y += (direction.y/10);
-        ball.position.x += (direction.x/10);
+        ball.position.z += ((direction.z/10)+G.z);
+        ball.position.y += ((direction.y/10)+G.y);
+        ball.position.x += ((direction.x/10)+G.x);
         console.log("Position de la balle = { "+ball.position.x+" , "+ball.position.y+" , "+ball.position.z+" }");
         collisionDetection();
         if (ball.position.z > 8){
@@ -197,9 +198,46 @@ function collisionDetection(){
 function collision(index){
         console.log("           Collision avec box "+index);
         boxes[index].material.color.set( "#00FF00" );
-        boxes[index].position.z += (direction.z/10);
-        boxes[index].position.y += (direction.y/10);
-        boxes[index].position.x += (direction.x/10);
+        var onTable = boxOnTable(index);
+        console.log("                   onTable = "+onTable);
+        if(onTable){
+                boxes[index].position.z += (direction.z/10);
+                boxes[index].position.y += (direction.y/10);
+                boxes[index].position.x += (direction.x/10);
+        }
+        else{
+                boxes[index].position.z += ((direction.z/10)+5*G.z);
+                boxes[index].position.y += ((direction.y/10)+5*G.y);
+                boxes[index].position.x += ((direction.x/10)+5*G.x);
+        }
+        
+}
+
+function boxOnTable(index){
+        //regarde si nos cibles sont posées sur la table ou entièrement sorties
+        //calcul les bords de la table
+        var frontT = table.position.z - (table.geometry.parameters.depth/2);
+        var backT = table.position.z + (table.geometry.parameters.depth/2);
+        var rightT = table.position.x + (table.geometry.parameters.width/2);
+        var leftT = table.position.x - (table.geometry.parameters.width/2);
+        
+
+        //calcule la positon des bord de la cible
+        var frontB = boxes[index].position.z - (boxes[index].geometry.parameters.depth/2);
+        var backB = boxes[index].position.z + (boxes[index].geometry.parameters.depth/2);
+        var rightB = boxes[index].position.x + (boxes[index].geometry.parameters.width/2);
+        var leftB = boxes[index].position.x - (boxes[index].geometry.parameters.width/2);
+        
+        console.log("                   frontT = "+frontT+"  frontB = "+frontB);
+        console.log("                   backT = "+backT+"  backB = "+backB);
+        console.log("                   rightT = "+rightT+"  rightB = "+rightB);
+        console.log("                   leftT = "+leftT+"  leftB = "+leftB);
+
+        if ( frontB < frontT || backB > backT || rightB > rightT || leftB < leftT ){
+                return false;
+        }
+
+        return true;
 }
 
 init();
