@@ -197,6 +197,9 @@ function collisionDetection(){
 function collision(index){
         console.log("           Collision avec box "+index);
         boxes[index].material.color.set( "#00FF00" );
+        boxes[index].position.z += (direction.z/10);
+        boxes[index].position.y += (direction.y/10);
+        boxes[index].position.x += (direction.x/10);
 }
 
 init();
