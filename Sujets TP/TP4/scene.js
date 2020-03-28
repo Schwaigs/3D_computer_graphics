@@ -1,10 +1,14 @@
 var W = 1000;
 var H = 700;
-var G = new THREE.Vector3(0,-0.02,0);
+//le vecteur accélération qui est composé uniquement de la gravite (divisé par 40 pour ralentir son effet et avoir une animation plus lente)
+var a = new THREE.Vector3(0,-0.255,0);
+//vecteurs vitesses initiaux servants pour la chute de chaque cible
+var v_boxes = [new THREE.Vector3(0,0,0),new THREE.Vector3(0,0,0),new THREE.Vector3(0,0,0)]; 
+var clock = new THREE.Clock(true);
 
 var container = document.querySelector('#threejsContainer');
 
-var scene, camera, renderer, controls, raycaster, mouse, boxes, ball, clic, direction, posDepart, ballRadius, table;
+var scene, camera, renderer, controls, raycaster, mouse, boxes, ball, clic, direction, posDepart, ballRadius, table, timeStep, sol;
 
 function init() {        
         scene = new THREE.Scene();        
@@ -22,6 +26,8 @@ function init() {
         //déplacement dans la scène à l'aide de la souris
         controls = new THREE.OrbitControls( camera, renderer.domElement );
 
+        var axesHelper = new THREE.AxesHelper( 5 );
+        scene.add( axesHelper );
 
         //source de lumière
         var pointLight_sun = new THREE.PointLight( 0xffffff, 1, 100 );
@@ -41,7 +47,7 @@ function init() {
         dat_gui_position(sun,gui,null);
 
         //sol
-        var sol = new THREE.Mesh(
+        sol = new THREE.Mesh(
                 new THREE.BoxGeometry(20,0.4,20),
                 new THREE.MeshLambertMaterial( { color: "#7AF751" })
         );
@@ -105,14 +111,12 @@ function init() {
 
 }
 
-function animate() { //a compléter   
+function animate() {  
         requestAnimationFrame(animate);
         controls.update();
+        physicUpdate();
         renderer.render(scene, camera);
         window.addEventListener( 'mousedown', onClick, false );
-        if (clic == true){
-                throwBall();
-        } 
 }
 
 function dat_gui_position(element,gui,shaderMaterial){
@@ -150,37 +154,48 @@ function dat_gui_position(element,gui,shaderMaterial){
 }
 
 function onClick( event ){
+        //recupère les coordonnées de la souris
         mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
         mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+        //créer le rayon dans la scene partant de la caméra et passant par les coordonnées
         raycaster.setFromCamera( mouse, camera );
+        //le vecteur direction correspond à notre vecteur vitesse de la balle
         direction=raycaster.ray.direction;
+        //on le muliplie par 0.5 pour avoir une animation plus lente
+        direction.multiplyScalar(0.5);
         clic = true;
 }
 
 function throwBall(){
-        ball.position.z += ((direction.z/10)+G.z);
-        ball.position.y += ((direction.y/10)+G.y);
-        ball.position.x += ((direction.x/10)+G.x);
-        console.log("Position de la balle = { "+ball.position.x+" , "+ball.position.y+" , "+ball.position.z+" }");
-        collisionDetection();
-        if (ball.position.z > 8){
+        //calcul du nouveau vecteur vitesse
+        direction.add(a.clone().multiplyScalar(timeStep));
+        //calcul du nouveau vecteur position
+        ball.position.add(direction);
+        //on vérifie que la balle n'est pas en collision avec le sol ou qu'elle n'est pas sortie de la scène
+        var backS = sol.position.z + (sol.geometry.parameters.depth/2);
+        var rightS = sol.position.x + (sol.geometry.parameters.width/2);
+        var leftS = sol.position.x - (sol.geometry.parameters.width/2);
+        if (ball.position.y < ballRadius || ball.position.z > backS || ball.position.x > rightS || ball.position.x < leftS){
                 clic = false;
+                //replace la balle à sa position de départ
                 ball.position.set(posDepart.x, posDepart.y, posDepart.z);
+        }
+        else{
+                //on regarde si elle est en collision avec une des cible
+                collisionDetectionBallBox();
         }
 }
 
-function collisionDetection(){
-        console.log("   Détection des collisions");
+function collisionDetectionBallBox(){
+        //On test chacune de nos cibles
         for ( var i = 0; i < boxes.length; i++ ) {
-                console.log("   Box "+i);
+                //On cherche la distance du point de la box le plus proche du centre de la sphère
                 boxes[i].geometry.computeBoundingBox();
                 var geo = boxes[i].geometry.boundingBox;
-                console.log("           minZ = "+(boxes[i].position.z+geo.min.z)+"  maxZ = "+(boxes[i].position.z+geo.max.z));
                 
                 var x = Math.max(boxes[i].position.x+geo.min.x, Math.min(ball.position.x, boxes[i].position.x+geo.max.x));
                 var y = Math.max(boxes[i].position.y+geo.min.y, Math.min(ball.position.y, boxes[i].position.y+geo.max.y));
                 var z = Math.max(boxes[i].position.z+geo.min.z, Math.min(ball.position.z, boxes[i].position.z+geo.max.z));
-                console.log("           x = "+x+"  y = "+y+"  z = "+z);
 
                 var distance = Math.sqrt(
                         (x - ball.position.x) * (x - ball.position.x) + 
@@ -188,56 +203,90 @@ function collisionDetection(){
                         (z - ball.position.z) * (z - ball.position.z)
                 );
 
-                console.log("           Distance = "+distance+"  Rayon = "+ballRadius);
+                //si la distance est plus petite que le rayon, alors la balle et la box sont en collision
                 if (distance < ballRadius){
                         collision(i);
+                }
+                //sinon on applique simplement la gravité à notre box 
+                else{
+                        physicBox(null,i);
                 }
         }
 }
 
 function collision(index){
-        console.log("           Collision avec box "+index);
-        boxes[index].material.color.set( "#00FF00" );
+        //on regarde si notre box est encore sur la table
         var onTable = boxOnTable(index);
-        console.log("                   onTable = "+onTable);
+        //si oui la balle va simplement pousser la box dans la même direction mais il n'y aura pas de décalage vers le sol
         if(onTable){
-                boxes[index].position.z += (direction.z/10);
-                boxes[index].position.y += (direction.y/10);
-                boxes[index].position.x += (direction.x/10);
+                //même vecteur vitesse que la balle sauf pas sur y
+                var v = new THREE.Vector3(direction.clone().x, 0, direction.clone().z);
+                //calcul du nouveau vecteur position
+                boxes[index].position.add(v);
         }
+        //sinon la balle va pousser la box et en plus cette dernière va subir la gravité
         else{
-                boxes[index].position.z += ((direction.z/10)+5*G.z);
-                boxes[index].position.y += ((direction.y/10)+5*G.y);
-                boxes[index].position.x += ((direction.x/10)+5*G.x);
+                physicBox(direction,index);
         }
         
 }
 
 function boxOnTable(index){
-        //regarde si nos cibles sont posées sur la table ou entièrement sorties
+        //regarde si notre cible est posée sur la table ou en est entièrement sortie
         //calcul les bords de la table
         var frontT = table.position.z - (table.geometry.parameters.depth/2);
         var backT = table.position.z + (table.geometry.parameters.depth/2);
         var rightT = table.position.x + (table.geometry.parameters.width/2);
         var leftT = table.position.x - (table.geometry.parameters.width/2);
         
-
         //calcule la positon des bord de la cible
         var frontB = boxes[index].position.z - (boxes[index].geometry.parameters.depth/2);
         var backB = boxes[index].position.z + (boxes[index].geometry.parameters.depth/2);
         var rightB = boxes[index].position.x + (boxes[index].geometry.parameters.width/2);
         var leftB = boxes[index].position.x - (boxes[index].geometry.parameters.width/2);
         
-        console.log("                   frontT = "+frontT+"  frontB = "+frontB);
-        console.log("                   backT = "+backT+"  backB = "+backB);
-        console.log("                   rightT = "+rightT+"  rightB = "+rightB);
-        console.log("                   leftT = "+leftT+"  leftB = "+leftB);
-
-        if ( frontB < frontT || backB > backT || rightB > rightT || leftB < leftT ){
+        if ( frontB > backT || backB < frontT || rightB < leftT || leftB > rightT ){
                 return false;
         }
 
         return true;
+}
+
+
+function physicUpdate(){
+        //met à jour le temps passé entre les deux rafraichissements
+        timeStep = clock.getDelta();
+        //regarde si la balle est lancée 
+        if (clic == true){
+                throwBall();
+        }
+        //sinon on applique simplement la gravité à toutes nos cibles
+        else {
+                for ( var i = 0; i < boxes.length; i++ ) {
+                        physicBox(null,i);
+                }
+        }
+}
+
+function physicBox(direc,i){
+        //regarde si la box est en collision avec la table ou le sol
+        var onTable = boxOnTable(i);
+        //si en colision avec aucun des deux alors en chute
+        if ( !onTable  && (boxes[i].position.y - (boxes[i].geometry.parameters.height/2)) > 0 ){
+                //calcul du nouveau vecteur vitesse
+                v_boxes[i].add(a.clone().multiplyScalar(timeStep));
+                //calcul du nouveau vecteur position
+                if (direc != null){
+                        //si la box est pousée par la balle on ajoute un multiple de notre vecteur direction en plus de la gravité
+                        var k_direction = direc.clone().multiplyScalar(0.3);
+                        v_boxes[i].add(k_direction);
+                }
+                boxes[i].position.add(v_boxes[i]);
+                //on verifie qu'avec la nouvelle position la box ne traverse pas le sol
+                if( (boxes[i].position.y - (boxes[i].geometry.parameters.height/2)) < 0 ){
+                        boxes[i].position.y = boxes[i].geometry.parameters.height/2;
+                }
+        }
 }
 
 init();
