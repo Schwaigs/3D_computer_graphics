@@ -26,9 +26,6 @@ function init() {
         //déplacement dans la scène à l'aide de la souris
         controls = new THREE.OrbitControls( camera, renderer.domElement );
 
-        var axesHelper = new THREE.AxesHelper( 5 );
-        scene.add( axesHelper );
-
         //source de lumière
         var pointLight_sun = new THREE.PointLight( 0xffffff, 1, 100 );
         pointLight_sun.position.set(0,10,-10);
@@ -48,7 +45,7 @@ function init() {
 
         //sol
         sol = new THREE.Mesh(
-                new THREE.BoxGeometry(20,0.4,20),
+                new THREE.BoxGeometry(40,0.4,40),
                 new THREE.MeshLambertMaterial( { color: "#7AF751" })
         );
         sol.position.set(0,-0.2,0);
@@ -108,7 +105,6 @@ function init() {
         scene.add(box3);
         boxes = [box1,box2,box3];
 
-
 }
 
 function animate() {  
@@ -154,16 +150,18 @@ function dat_gui_position(element,gui,shaderMaterial){
 }
 
 function onClick( event ){
-        //recupère les coordonnées de la souris
-        mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-        mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-        //créer le rayon dans la scene partant de la caméra et passant par les coordonnées
-        raycaster.setFromCamera( mouse, camera );
-        //le vecteur direction correspond à notre vecteur vitesse de la balle
-        direction=raycaster.ray.direction;
-        //on le muliplie par 0.5 pour avoir une animation plus lente
-        direction.multiplyScalar(0.5);
-        clic = true;
+        if (!clic){
+                //recupère les coordonnées de la souris
+                mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+                mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+                //créer le rayon dans la scene partant de la caméra et passant par les coordonnées
+                raycaster.setFromCamera( mouse, camera );
+                //le vecteur direction correspond à notre vecteur vitesse de la balle
+                direction=raycaster.ray.direction;
+                //on le muliplie par 0.5 pour avoir une animation plus lente
+                direction.multiplyScalar(0.5);
+                clic = true;
+        }
 }
 
 function throwBall(){
@@ -278,7 +276,7 @@ function physicBox(direc,i){
                 //calcul du nouveau vecteur position
                 if (direc != null){
                         //si la box est pousée par la balle on ajoute un multiple de notre vecteur direction en plus de la gravité
-                        var k_direction = direc.clone().multiplyScalar(0.3);
+                        var k_direction = direc.clone().multiplyScalar(0.15);
                         v_boxes[i].add(k_direction);
                 }
                 boxes[i].position.add(v_boxes[i]);
