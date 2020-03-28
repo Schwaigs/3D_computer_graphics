@@ -5,16 +5,19 @@ var a = new THREE.Vector3(0,-0.255,0);
 //vecteurs vitesses initiaux servants pour la chute de chaque cible
 var v_boxes = [new THREE.Vector3(0,0,0),new THREE.Vector3(0,0,0),new THREE.Vector3(0,0,0)]; 
 var clock = new THREE.Clock(true);
+//position de départ de la balle et donc aussi celle de la camera
+var posDepart = new THREE.Vector3(0, 3, -10);
+//position précedente de notre balle
+var b_prec_pos = posDepart.clone();
 
 var container = document.querySelector('#threejsContainer');
 
-var scene, camera, renderer, controls, raycaster, mouse, boxes, ball, clic, direction, posDepart, ballRadius, table, timeStep, sol;
+var scene, camera, renderer, controls, raycaster, mouse, boxes, ball, clic, direction, ballRadius, table, pieds, timeStep, sol;
 
 function init() {        
         scene = new THREE.Scene();        
 
         camera = new THREE.PerspectiveCamera(75, W / H, 0.1, 1000);
-        posDepart = new THREE.Vector3(0, 3, -10);
         camera.position.set(posDepart.x, posDepart.y, posDepart.z);
         camera.lookAt(scene.position);
         scene.add(camera);
@@ -65,7 +68,7 @@ function init() {
         mouse = new THREE.Vector2();
 
         //Création table pour le chamboule tout
-        var pied_geo = new THREE.CylinderGeometry(0.12,0.12,1.5,20);
+        var pied_geo = new THREE.BoxGeometry(0.24,1.5,0.24);
         var table_mat = new THREE.MeshLambertMaterial( { color: "#AD6627" })
         var pied1 = new THREE.Mesh(pied_geo,table_mat);
         pied1.position.set(2.5,0.8,5);
@@ -79,6 +82,7 @@ function init() {
         var pied4 = new THREE.Mesh(pied_geo,table_mat);
         pied4.position.set(-2.5,0.8,5);
         scene.add(pied4);
+        pieds = [pied1,pied2,pied3,pied4];
         var table_geo = new THREE.BoxGeometry(5.3,0.2,2.3);
         table = new THREE.Mesh(table_geo,table_mat);
         table.position.set(0,1.5,6);
@@ -165,51 +169,69 @@ function onClick( event ){
 }
 
 function throwBall(){
+        //met à jour l'ancienne position de la balle
+        b_prec_pos = ball.position.clone();
         //calcul du nouveau vecteur vitesse
         direction.add(a.clone().multiplyScalar(timeStep));
         //calcul du nouveau vecteur position
         ball.position.add(direction);
-        //on vérifie que la balle n'est pas en collision avec le sol ou qu'elle n'est pas sortie de la scène
+        //on vérifie que la balle n'est pas en collision avec le sol, un des pieds de la table ou qu'elle n'est pas sortie de la scène
         var backS = sol.position.z + (sol.geometry.parameters.depth/2);
         var rightS = sol.position.x + (sol.geometry.parameters.width/2);
         var leftS = sol.position.x - (sol.geometry.parameters.width/2);
-        if (ball.position.y < ballRadius || ball.position.z > backS || ball.position.x > rightS || ball.position.x < leftS){
+        if (ball.position.y < ballRadius || ball.position.z > backS || ball.position.x > rightS || ball.position.x < leftS || collisionDetection(pieds[0]) < ballRadius 
+             || collisionDetection(pieds[1]) < ballRadius || collisionDetection(pieds[2]) < ballRadius || collisionDetection(pieds[3]) < ballRadius ){
                 clic = false;
                 //replace la balle à sa position de départ
                 ball.position.set(posDepart.x, posDepart.y, posDepart.z);
         }
         else{
+                //on regarde si la balle est en collision avec la planche de la table
+                if ( collisionDetection(table) < ballRadius ){
+                        //si la balle a un point plus bas que le haut table alors qu'à sa précédente position elle était au dessus 
+                        //alors on la repositionne sur la table pour la faire rouler dessus
+                        if( (ball.position.y - ballRadius < table.position.y + (table.geometry.parameters.height/2)) && 
+                                (b_prec_pos.y - ballRadius >= table.position.y + (table.geometry.parameters.height/2)) ){
+                                ball.position.y = (table.position.y + (table.geometry.parameters.height/2)) + ballRadius;
+                        }
+                        //sinon c'est quelle tape la table sur un des bords donc elle reviens à sa position initiale
+                        else{
+                                clic = false;
+                                ball.position.set(posDepart.x, posDepart.y, posDepart.z);
+                        }
+                }
+                
                 //on regarde si elle est en collision avec une des cible
-                collisionDetectionBallBox();
+                for ( var i = 0; i < boxes.length; i++ ) {
+                        var distance = collisionDetection(boxes[i]);
+                        //si la distance est plus petite que le rayon, alors la balle et la box sont en collision
+                        if (distance < ballRadius){
+                                collision(i);
+                        }
+                        //sinon on applique simplement la gravité à notre box 
+                        else{
+                                physicBox(null,i);
+                        }
+                }
+                
         }
 }
 
-function collisionDetectionBallBox(){
-        //On test chacune de nos cibles
-        for ( var i = 0; i < boxes.length; i++ ) {
-                //On cherche la distance du point de la box le plus proche du centre de la sphère
-                boxes[i].geometry.computeBoundingBox();
-                var geo = boxes[i].geometry.boundingBox;
-                
-                var x = Math.max(boxes[i].position.x+geo.min.x, Math.min(ball.position.x, boxes[i].position.x+geo.max.x));
-                var y = Math.max(boxes[i].position.y+geo.min.y, Math.min(ball.position.y, boxes[i].position.y+geo.max.y));
-                var z = Math.max(boxes[i].position.z+geo.min.z, Math.min(ball.position.z, boxes[i].position.z+geo.max.z));
+function collisionDetection(element){
+        //Calcule la distance du point de l'élément(BoxGeometry) le plus proche du centre de la balle
+        element.geometry.computeBoundingBox();
+        var geo = element.geometry.boundingBox;
+        
+        var x = Math.max(element.position.x+geo.min.x, Math.min(ball.position.x, element.position.x+geo.max.x));
+        var y = Math.max(element.position.y+geo.min.y, Math.min(ball.position.y, element.position.y+geo.max.y));
+        var z = Math.max(element.position.z+geo.min.z, Math.min(ball.position.z, element.position.z+geo.max.z));
 
-                var distance = Math.sqrt(
-                        (x - ball.position.x) * (x - ball.position.x) + 
-                        (y - ball.position.y) * (y - ball.position.y) + 
-                        (z - ball.position.z) * (z - ball.position.z)
-                );
-
-                //si la distance est plus petite que le rayon, alors la balle et la box sont en collision
-                if (distance < ballRadius){
-                        collision(i);
-                }
-                //sinon on applique simplement la gravité à notre box 
-                else{
-                        physicBox(null,i);
-                }
-        }
+        var distance = Math.sqrt(
+                (x - ball.position.x) * (x - ball.position.x) + 
+                (y - ball.position.y) * (y - ball.position.y) + 
+                (z - ball.position.z) * (z - ball.position.z)
+        );
+        return distance
 }
 
 function collision(index){
